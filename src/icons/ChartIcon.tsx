@@ -1,12 +1,6 @@
 const ChartIcon = ({ fill }: { fill?: boolean }) => {
   return (
-    <svg
-      width="19"
-      height="21"
-      viewBox="0 0 19 21"
-      fill={fill ? "#909090" : "none"}
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="19" height="21" viewBox="0 0 19 21" fill={fill ? "#909090" : "none"} xmlns="http://www.w3.org/2000/svg">
       <mask id="path-1-inside-1_156_153034" fill="white">
         <path d="M0 12.9346C0 12.3823 0.447715 11.9346 1 11.9346H4.58824C5.14052 11.9346 5.58824 12.3823 5.58824 12.9346V20.8757H0V12.9346Z" />
       </mask>
@@ -38,8 +32,8 @@ const ChartIcon = ({ fill }: { fill?: boolean }) => {
         d="M1.5 9.37598L16.2059 1.87598M16.2059 1.87598L14 1.12305M16.2059 1.87598L15.5 4.12598"
         stroke="#909090"
         strokeWidth="1.2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
