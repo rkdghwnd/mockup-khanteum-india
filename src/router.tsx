@@ -1,10 +1,15 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  BrowserRouter,
+  createBrowserRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
 import Home from "./pages/Home";
 import IndexChart from "./pages/IndexChart";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
-import Signup from "./pages/SignUp";
+import Signup from "./pages/Signup";
 import Upload from "./pages/Upload";
 
 const Router = () => {
@@ -17,7 +22,20 @@ const Router = () => {
     { path: "/signup", element: <Signup /> },
     { path: "/upload", element: <Upload /> },
   ]);
-  return <RouterProvider router={route} />;
+  // return <RouterProvider router={route} />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/chart" element={<Home />} />
+        <Route path="/login" element={<Home />} />
+        <Route path="/profile" element={<Home />} />
+        <Route path="/search" element={<Home />} />
+        <Route path="/signup" element={<Home />} />
+        <Route path="/upload" element={<Home />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default Router;
