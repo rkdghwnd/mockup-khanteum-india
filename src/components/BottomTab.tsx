@@ -7,7 +7,7 @@ import SearchIcon from "../icons/SearchIcon";
 const BottomTab = () => {
   const { pathname } = useLocation();
   return (
-    <aside className="fixed right-0 bottom-0 left-0 z-30 h-[52px] bg-[#ffffffe6] flex justify-evenly items-center border-t-[1px] border-solid border-slate-200">
+    <aside className="fixed right-0 bottom-0 left-0 z-30 h-[52px] bg-white flex justify-evenly items-center border-t-[1px] border-solid border-slate-200">
       <Link to="/chart">
         <ChartIcon fill={pathname === "/chart"} />
       </Link>

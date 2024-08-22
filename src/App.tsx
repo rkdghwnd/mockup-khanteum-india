@@ -5,10 +5,12 @@ import Router from "./router";
 
 function App() {
   return (
-    <div className="relative min-h-screen flex justify-center max-w-[768px] pt-[50px] mx-auto overflow-hidden">
-      <Header />
-      <Router />
-      <BottomTab />
+    <div className=" flex justify-center items-center box-border ">
+      <main className="relative max-w-[768px] w-full min-h-screen py-[52px] overflow-hidden">
+        <Header />
+        <Router />
+        <BottomTab />
+      </main>
     </div>
   );
 }
