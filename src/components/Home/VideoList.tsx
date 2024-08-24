@@ -19,7 +19,11 @@ const VideoList = ({ title, videoSrc, className }: VidoeListProps) => {
       <div className=" w-[95%] overflow-hidden whitespace-nowrap space-x-4 mt-4">
         {videoSrc.map((src, idx) => (
           <Link to={"/"} key={idx + Math.random()}>
-            <Thumbnail src={src} count={(idx + 1) * randomCount()} heart={(idx + 1) * randomCount()} />
+            <Thumbnail
+              src={src}
+              count={(idx + 1) * randomCount()}
+              heart={(idx + 1) * randomCount()}
+            />
           </Link>
         ))}
       </div>

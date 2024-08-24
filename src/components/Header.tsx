@@ -11,11 +11,15 @@ const Header = () => {
     setSidebarToggle(false);
   }, [pathname]);
   return (
-    <header className="absolute top-0 left-1/2 -translate-x-1/2 z-20 w-full  max-w-[768px] h-[50px] flex items-center justify-center">
+    <header className="fixed overflow-x-clip top-0 left-1/2 -translate-x-1/2 z-20 w-full bg-white max-w-[768px] h-[50px] flex items-center justify-center  ">
       <div className="w-[204px] h-[34px] ">
         <img src="slotMachine.png" className="w-full h-full" />
       </div>
-      <HamburgerBtn className="absolute top-1/2 right-[15px] -translate-y-1/2" toggle={setSidebarToggle} openState={sidebarToggle} />
+      <HamburgerBtn
+        className="absolute top-1/2 right-[15px] -translate-y-1/2"
+        toggle={setSidebarToggle}
+        openState={sidebarToggle}
+      />
       <Sidebar open={sidebarToggle} />
     </header>
   );
