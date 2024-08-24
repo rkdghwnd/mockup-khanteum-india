@@ -33,6 +33,12 @@ const Banner = () => {
           autoplay={{ delay: 3000 }}
           modules={[Autoplay]}
           ref={swiperRef}
+          breakpoints={{
+            320: {
+              slidesPerView: 1.3,
+              spaceBetween: 20,
+            },
+          }}
         >
           <SwiperSlide className="overflow-hidden rounded-lg">
             <img src="banner1.png" alt="" className="w-full h-full object-cover" />

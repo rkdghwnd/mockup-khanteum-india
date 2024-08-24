@@ -10,7 +10,22 @@ const DreamerRanking = () => {
         <h2 className="text-[15px] font-medium text-[#303030]">2024 Everyone's Startup Dreamer Ranking</h2>
         <RightArrowIcon />
       </div>
-      <Swiper className="max-h-[205px] w-[95%] overflow-hidden  mt-4" slidesPerView={3} spaceBetween={5} grabCursor={true}>
+      <Swiper
+        className="max-h-[205px] w-[95%] overflow-hidden  mt-4"
+        slidesPerView={3}
+        spaceBetween={10}
+        grabCursor={true}
+        breakpoints={{
+          320: {
+            slidesPerView: 2.5,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 4,
+            spaceBetween: 2,
+          },
+        }}
+      >
         {DUMMYRANKING.map((ranking) => (
           <SwiperSlide>
             <RankingAvatar {...ranking} key={ranking.user} />
