@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import RightArrowIcon from "../../icons/RightArrowIcon";
 import { cn } from "../../utils/util";
 import Thumbnail from "./Thumbnail";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 type VidoeListProps = {
   title: string;
@@ -16,17 +17,15 @@ const VideoList = ({ title, videoSrc, className }: VidoeListProps) => {
         <h2 className="text-[15px] font-medium text-[#303030]">{title}</h2>
         <RightArrowIcon />
       </div>
-      <div className=" w-[95%] overflow-hidden whitespace-nowrap space-x-4 mt-4">
+      <Swiper slidesPerView={3} spaceBetween={5} grabCursor={true} className="w-[95%] overflow-hidden mt-4">
         {videoSrc.map((src, idx) => (
-          <Link to={"/"} key={idx + Math.random()}>
-            <Thumbnail
-              src={src}
-              count={(idx + 1) * randomCount()}
-              heart={(idx + 1) * randomCount()}
-            />
-          </Link>
+          <SwiperSlide>
+            <Link to={"/"} key={idx + Math.random()}>
+              <Thumbnail src={src} count={(idx + 1) * randomCount()} heart={(idx + 1) * randomCount()} />
+            </Link>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </section>
   );
 };
