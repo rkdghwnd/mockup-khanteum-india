@@ -26,9 +26,9 @@ const DreamerRanking = () => {
           },
         }}
       >
-        {DUMMYRANKING.map((ranking) => (
-          <SwiperSlide>
-            <RankingAvatar {...ranking} key={ranking.user} />
+        {DUMMYRANKING.map((ranking, idx) => (
+          <SwiperSlide key={ranking.user + idx}>
+            <RankingAvatar {...ranking} />
           </SwiperSlide>
         ))}
       </Swiper>

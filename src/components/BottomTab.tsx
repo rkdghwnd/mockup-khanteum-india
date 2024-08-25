@@ -1,15 +1,18 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import ChartIcon from "../icons/ChartIcon";
 import CirclePlusIcon from "../icons/CirclePlusIcon";
 import ProfileIcon from "../icons/ProfileIcon";
 import SearchIcon from "../icons/SearchIcon";
 
 const BottomTab = () => {
+  const [params] = useSearchParams();
+  const chart = params.get("chart") === "true" ? true : false;
+
   const { pathname } = useLocation();
   return (
-    <aside className="fixed right-0 bottom-0 left-0 z-30 h-[52px] bg-white flex justify-evenly items-center border-t-[1px] border-solid border-slate-200">
-      <Link to="/chart">
-        <ChartIcon fill={pathname === "/chart"} />
+    <aside className="fixed right-0 bottom-0 left-0 z-50 h-[52px] bg-white flex justify-evenly items-center border-t-[1px] border-solid border-slate-200">
+      <Link to={chart ? `${pathname}?chart=false` : `${pathname}?chart=true`}>
+        <ChartIcon fill={chart} />
       </Link>
       <Link to="/upload">
         <CirclePlusIcon fill={pathname === "/upload"} />

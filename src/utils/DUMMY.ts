@@ -16,3 +16,4 @@ export const VIDOEDUMMY = {
   cooking: ["thumbnail/cooking1.png", "thumbnail/cooking2.png", "thumbnail/cooking1.png", "thumbnail/cooking2.png"],
   beauty: ["thumbnail/beauty1.png", "thumbnail/beauty2.png", "thumbnail/beauty1.png", "thumbnail/beauty2.png"],
 };
+export const CATEGORY = ["Music", "Dance", "Art", "Fashion", "Sports", "Cooking", "Beauty"];

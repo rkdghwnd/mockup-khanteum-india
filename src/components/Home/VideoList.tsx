@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
 import RightArrowIcon from "../../icons/RightArrowIcon";
-import { cn } from "../../utils/util";
+import { cn, randomCount } from "../../utils/util";
 import Thumbnail from "./Thumbnail";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-type VidoeListProps = {
+type VideoListProps = {
   title: string;
   videoSrc: string[];
   className?: string;
 };
-const randomCount = () => Math.floor(Math.random() * 1000) + 1;
-const VideoList = ({ title, videoSrc, className }: VidoeListProps) => {
+const VideoList = ({ title, videoSrc, className }: VideoListProps) => {
   return (
     <section className={cn("w-full px-5 h-auto", className)}>
       <div className="flex justify-between w-full">
@@ -24,6 +23,10 @@ const VideoList = ({ title, videoSrc, className }: VidoeListProps) => {
         className="w-[95%] overflow-hidden mt-4"
         breakpoints={{
           320: {
+            slidesPerView: 1.8,
+            spaceBetween: 3,
+          },
+          360: {
             slidesPerView: 2,
             spaceBetween: 10,
           },
@@ -34,9 +37,9 @@ const VideoList = ({ title, videoSrc, className }: VidoeListProps) => {
         }}
       >
         {videoSrc.map((src, idx) => (
-          <SwiperSlide>
-            <Link to={"/"} key={idx + Math.random()}>
-              <Thumbnail src={src} count={(idx + 1) * randomCount()} heart={(idx + 1) * randomCount()} />
+          <SwiperSlide key={idx + Math.random()}>
+            <Link to={"/"}>
+              <Thumbnail src={src} count={(idx + 1) * randomCount(1000)} heart={(idx + 1) * randomCount(1000)} />
             </Link>
           </SwiperSlide>
         ))}

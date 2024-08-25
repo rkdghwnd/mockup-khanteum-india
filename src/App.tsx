@@ -1,6 +1,7 @@
 import "./App.css";
 import BottomTab from "./components/BottomTab";
 import Header from "./components/Header";
+import IndexChart from "./components/Chart/IndexChart";
 import Router from "./router";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
         <Header />
         <Router />
         <BottomTab />
+        <IndexChart />
       </main>
     </div>
   );
