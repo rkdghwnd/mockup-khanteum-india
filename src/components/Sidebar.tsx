@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "../utils/util";
-import Avatar from "./Abatar";
+import Avatar from "./Avatar";
 import SidebarMenuGroup from "./SidebarMenuGroup";
 import { useReducer } from "react";
 
