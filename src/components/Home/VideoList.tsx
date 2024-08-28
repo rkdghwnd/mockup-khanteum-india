@@ -38,7 +38,7 @@ const VideoList = ({ title, videoSrc, className }: VideoListProps) => {
       >
         {videoSrc.map((src, idx) => (
           <SwiperSlide key={idx + Math.random()}>
-            <Link to={"/"}>
+            <Link to={"/video"}>
               <Thumbnail src={src} count={(idx + 1) * randomCount(1000)} heart={(idx + 1) * randomCount(1000)} />
             </Link>
           </SwiperSlide>
