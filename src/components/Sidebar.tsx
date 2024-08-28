@@ -15,7 +15,7 @@ const Sidebar = ({ open }: SidebarProps) => {
       className={cn(
         "absolute overflow-y-auto right-0 top-[50px] z-20 w-4/5 max-w-[350px] sm:min-h-[calc(100vh-102px)] max-h-[calc(100vh-102px)] pt-5 px-2  shadow-2xl border border-white border-solid backdrop-blur-sm bg-[#F0F0F099] rounded-s-3xl transition duration-500 ease-in-out opacity-100",
         {
-          ["translate-x-full opacity-0"]: !open,
+          ["translate-x-[300%] opacity-0 "]: !open,
         }
       )}
     >
@@ -46,13 +46,24 @@ const Sidebar = ({ open }: SidebarProps) => {
               ▼
             </span>
           </button>
-          <div className={cn("mt-2 h-0 overflow-hidden text-[10px]  transition-all duration-500", { ["h-[200px]"]: toggle })}>
+          <div
+            className={cn(
+              "mt-2 h-0 overflow-hidden text-[10px]  transition-all duration-500",
+              { ["h-[200px]"]: toggle }
+            )}
+          >
             <p>Khanaires Corporation</p>
-            <p>Address: 203-2, 25, 25, Digital-ro 32ga-gil, Guro-gu, Seoul, Republic of Korea</p>
+            <p>
+              Address: 203-2, 25, 25, Digital-ro 32ga-gil, Guro-gu, Seoul,
+              Republic of Korea
+            </p>
             <p>CEO: Youngkyun Kim</p>
             <p>Business license number: 252-87-01071</p>
             <p>Mail-order Business: 제2022-서울구로-1015호</p>
-            <p>Telephone: 070-4120-3619 (Available hours: 10:00~13:00, 14:00~18:00)</p>
+            <p>
+              Telephone: 070-4120-3619 (Available hours: 10:00~13:00,
+              14:00~18:00)
+            </p>
             <p>Email: contact@khanaires.com</p>
             <p>Ⓒ 2022 Khanaires Corporation ALL RIGHTS RESERVED</p>
           </div>

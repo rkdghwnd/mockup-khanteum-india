@@ -31,15 +31,29 @@ const IndexChart = () => {
     >
       <div className="h-full max-w-[450px]">
         <ChartHeader day={today} />
-        <Summary title="SINCE 2018" subList={["Sales & Transfer of Rights Total", "Royalty Payment Total"]} calcList={[108535049876, 4736771806]} />
+        <Summary
+          title="SINCE 2018"
+          subList={[
+            "Sales & Transfer of Rights Total",
+            "Royalty Payment Total",
+          ]}
+          calcList={[108535049876, 4736771806]}
+        />
         <Summary
           title="Pushing Index Chart(India)"
-          subList={[`${today.year - 1} Push Total`, "This Month Push Total", "Today's Push Total"]}
+          subList={[
+            `${today.year - 1} Push Total`,
+            "This Month Push Total",
+            "Today's Push Total",
+          ]}
           calcList={[4593397000, 391000, 0]}
         />
         <ChartRanking rank={DUMMYRANKING.slice(0, 3)} />
         <CategoryList category={CATEGORY} />
-        <Summary subList={["Royalty Payment Finances"]} calcList={[randomCount(1000000)]} />
+        <Summary
+          subList={["Royalty Payment Finances"]}
+          calcList={[randomCount(1000000)]}
+        />
         <div className="flex flex-wrap justify-between px-2 pb-5 mt-3">
           <Category>
             <p className="flex items-center">
