@@ -1,10 +1,10 @@
 export const DUMMYRANKING = [
-  { user: "LeeSeonghyuk", profile: "avatar-1.png" },
+  { user: "Daler Chopra", profile: "avatar-1.png" },
   { user: "MammaMia", profile: "avatar-2.png" },
-  { user: "DASROO", profile: "avatar-3.png" },
-  { user: "POPO", profile: "avatar-4.png" },
-  { user: "INSURE", profile: "avatar-5.png" },
-  { user: "daily_j995", profile: "avatar-6.png" },
+  { user: "India", profile: "avatar-3.png" },
+  { user: "Hoya", profile: "avatar-4.png" },
+  { user: "dance", profile: "avatar-5.png" },
+  { user: "Yeye", profile: "avatar-6.png" },
 ];
 export const VIDOEDUMMY = {
   official: ["thumbnail/official1.png", "thumbnail/official2.png", "thumbnail/official3.png", "thumbnail/official2.png"],
