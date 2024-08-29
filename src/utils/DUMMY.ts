@@ -7,7 +7,7 @@ export const DUMMYRANKING = [
   { user: "daily_j995", profile: "avatar-6.png" },
 ];
 export const VIDOEDUMMY = {
-  official: ["thumbnail/official1.png", "thumbnail/official2.png", "thumbnail/official1.png", "thumbnail/official2.png"],
+  official: ["thumbnail/official1.png", "thumbnail/official2.png", "thumbnail/official3.png", "thumbnail/official2.png"],
   music: ["thumbnail/music1.png", "thumbnail/music2.png", "thumbnail/music1.png", "thumbnail/music2.png"],
   dance: ["thumbnail/dance1.png", "thumbnail/dance2.png", "thumbnail/dance1.png", "thumbnail/dance2.png"],
   fashion: ["thumbnail/fashion1.png", "thumbnail/fashion2.png", "thumbnail/fashion1.png", "thumbnail/fashion2.png"],

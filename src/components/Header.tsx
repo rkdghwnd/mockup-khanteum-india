@@ -13,7 +13,10 @@ const Header = () => {
   return (
     <header className="fixed  top-0 left-1/2 -translate-x-1/2 z-20 w-full bg-white max-w-[768px] h-[50px] flex items-center justify-center  ">
       <div className="w-[204px] h-[34px] ">
-        <img src="slotMachine.png" className="w-full h-full" />
+        <video autoPlay muted>
+          <source src="slotMachine.mp4" type="video/mp4"></source>
+        </video>
+        {/* <img src="slotMachine.png" className="w-full h-full" /> */}
       </div>
       <HamburgerBtn className="absolute top-1/2 right-[15px] -translate-y-1/2" toggle={setSidebarToggle} openState={sidebarToggle} />
       <Sidebar open={sidebarToggle} />

@@ -58,12 +58,14 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
         </Link>
       </div>
       <div className="w-[calc(100%-40px)] flex flex-col space-y-3 mt-8">
+      <Link to="/">
         <button
           type="submit"
           className="rounded-3xl w-full text-[#d04bff] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r "
         >
           Log In
         </button>
+        </Link>
         <button
           type="button"
           className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r"
