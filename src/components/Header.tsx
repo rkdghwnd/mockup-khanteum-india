@@ -7,6 +7,7 @@ const Header = () => {
   const { pathname } = useLocation();
   const [sidebarToggle, setSidebarToggle] = useState(false);
 
+  // 메뉴 클릭으로 url이 이동하면 사이드바 닫기 useEffect
   useEffect(() => {
     setSidebarToggle(false);
   }, [pathname]);
