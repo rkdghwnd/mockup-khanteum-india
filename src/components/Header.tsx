@@ -16,7 +16,6 @@ const Header = () => {
         <video autoPlay muted>
           <source src="slotMachine.mp4" type="video/mp4"></source>
         </video>
-        {/* <img src="slotMachine.png" className="w-full h-full" /> */}
       </div>
       <HamburgerBtn className="absolute top-1/2 right-[15px] -translate-y-1/2" toggle={setSidebarToggle} openState={sidebarToggle} />
       <Sidebar open={sidebarToggle} />
