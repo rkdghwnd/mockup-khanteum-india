@@ -26,7 +26,7 @@ const Avatar = ({ src, size, className }: AvatarProps) => {
   return (
     <label className="relative">
       <div className={cn(avatarVariants({ size, className }))}>
-        {src === "" ? <ProfileIcon className="w-full h-full" /> : <image href={src} style={{ objectFit: "cover" }} />}
+        {src === "" ? <ProfileIcon className="w-full h-full" /> : <img src={src} style={{ objectFit: "cover" }} />}
       </div>
     </label>
   );
