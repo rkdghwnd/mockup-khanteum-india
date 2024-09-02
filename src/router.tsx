@@ -6,6 +6,7 @@ import Search from "./pages/Search";
 import Signup from "./pages/Signup";
 import Upload from "./pages/Upload";
 import Video from "./pages/Video";
+import Push from "./pages/Push";
 
 const Router = () => {
   // return <RouterProvider router={route} />;
@@ -18,6 +19,7 @@ const Router = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/upload" element={<Upload />} />
       <Route path="/video" element={<Video />} />
+      <Route path="/push" element={<Push />} />
     </Routes>
   );
 };
