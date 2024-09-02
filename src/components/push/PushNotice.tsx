@@ -1,6 +1,6 @@
 const PushNotice = () => {
   return (
-    <div className="w-full mt-16">
+    <div className="w-full mt-10 md:mt-16">
       <h3 className="mb-3 text-xl">Push Notice</h3>
       <ul className="list-disc">
         <li>

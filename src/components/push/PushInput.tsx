@@ -26,7 +26,7 @@ const PushInput = ({ className, label, type = "text", ...args }: PushInputProps)
 
   return (
     <div className={cn("w-full ", className)}>
-      <label className="block text-sm font-bold text-[#b7b7b7] mb-2">{label}</label>
+      <label className="block text-sm font-bold text-[#b7b7b7] mb-1 md:mb-2">{label}</label>
       <div className="relative w-full bg-white  flex items-center h-[52px] pr-3 border border-solid border-[#b7b7b7] rounded-md overflow-hidden">
         <input
           type={type}

@@ -70,3 +70,10 @@ export const DUMMYUSER = {
 };
 
 export const FOLLOWERS = ["avatar-1.png", "avatar-2.png", "avatar-3.png"];
+
+export const SEARCHDUMMY = [
+  { user: "Daler Chopra", profile: "avatar-1.png", push: 2032 },
+  { user: "MammaMia", profile: "avatar-2.png", push: 65167 },
+  { user: "India", profile: "avatar-3.png", push: 1234 },
+  { user: "Hoya", profile: "avatar-4.png", push: 12353 },
+];

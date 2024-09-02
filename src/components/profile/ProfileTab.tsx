@@ -5,7 +5,11 @@ import ProfileVoteIcon from "../../icons/ProfileVoteIcon";
 import RankingIcon from "../../icons/RankingIcon";
 import { cn } from "../../utils/util";
 
-const ProfileTab = ({ currentTab, setTab }: { currentTab: number; setTab: Dispatch<SetStateAction<number>> }) => {
+//프로필 탭과 검색 탭이 동일해서 둘이 공유 하는 컴포넌트로 변경해도 좋을 것 같습니다
+
+type ProfileTabProps = { currentTab: number; setTab: Dispatch<SetStateAction<number>> };
+
+const ProfileTab = ({ currentTab, setTab }: ProfileTabProps) => {
   // 탭 바꾸는 함수
   const tabChange = (idx: number) => {
     if (currentTab === idx) return;

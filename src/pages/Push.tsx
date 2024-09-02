@@ -24,7 +24,7 @@ const Push = () => {
         {"<"}
       </button>
       <PushProfil />
-      <div className="w-full text-right my-7">
+      <div className="w-full text-right my-4 md:my-7">
         <button className="w-[75px] h-[35px] text-sm rounded-2xl bg-[#464646] text-white pb-1">Charging</button>
       </div>
       <form onSubmit={submitHandler} className="w-full">
@@ -36,7 +36,7 @@ const Push = () => {
             Full
           </button>
         </div>
-        <div className="w-full flex justify-between mt-14">
+        <div className="w-full flex justify-between mt-10 md:mt-14">
           <button
             type="button"
             onClick={historyBack}
