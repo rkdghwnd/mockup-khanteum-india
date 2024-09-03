@@ -6,6 +6,8 @@ import Search from "./pages/Search";
 import Signup from "./pages/Signup";
 import Upload from "./pages/Upload";
 import Video from "./pages/Video";
+import MyWallet from "./components/Wallet/MyWallet";
+import WalletPassword from "./components/Wallet/WalletPassword";
 import Push from "./pages/Push";
 
 const Router = () => {
@@ -15,6 +17,8 @@ const Router = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/myWallet" element={<MyWallet />} />
+      <Route path="/walletPassword" element={<WalletPassword />} />
       <Route path="/search" element={<Search />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/upload" element={<Upload />} />
