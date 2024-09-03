@@ -31,7 +31,7 @@ const SelectCategory = ({ className, selectList, ...args }: SelectCategoryProps)
   return (
     <div
       className={cn(
-        "relative w-full shadow-[0px_2px_6px_rgba(0,0,0,0.18)] cursor-pointer rounded-md text-[#626262] py-1 pl-2 pr-6 md:p-3 bg-white",
+        "relative w-full shadow-[0px_2px_6px_rgba(0,0,0,0.18)] cursor-pointer rounded-md text-[#626262] py-[1px] pl-2 pr-6 md:py-2 md:px-4 bg-white",
         className
       )}
     >
@@ -58,7 +58,7 @@ const SelectCategory = ({ className, selectList, ...args }: SelectCategoryProps)
               <SearchIcon strokeColor="#000" className="w-[13px] h-[13px]" />
             </span>
           </div>
-          <ul className="overflow-y-scroll h-full">
+          <ul className="overflow-y-scroll h-full mt-2">
             {filterList.map((val) => (
               <li
                 key={val}
