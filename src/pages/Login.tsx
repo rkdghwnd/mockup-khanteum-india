@@ -3,7 +3,7 @@ import SocialLogin from "../components/Login/SocialLogin";
 
 const Login = () => {
   const LoginHandle = ({ id, pw }: { id: string; pw: string }) => {
-    let ad = 2;
+    console.log(id, pw);
   };
   return (
     <section className="bg-[url('bg_pc.png')] h-[calc(100vh-105px)] overflow-hidden flex flex-col items-center justify-center">
