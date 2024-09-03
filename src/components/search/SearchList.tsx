@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dropdown from "../Dropdown";
 import { SEARCHDUMMY } from "../../utils/DUMMY";
 import { Link } from "react-router-dom";
@@ -17,6 +17,10 @@ const SearchList = () => {
   //드롭다운으로 바뀌는 sorting조건을 받기 위한 함수
   const changeOrder = (id: string, data: string) => setOrder((prev) => ({ ...prev, [id]: data }));
 
+  //추후 삭제(그냥 오더 찍는거)
+  useEffect(() => {
+    console.log(order);
+  }, []);
   return (
     <div>
       <div className=" h-[45px] text-right mt-5">

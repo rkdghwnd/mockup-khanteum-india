@@ -1,4 +1,4 @@
-const FingerIcon = ({ className }: { className: string }) => {
+const FingerIcon = ({ className }: { className?: string }) => {
   return (
     <svg width="13" height="21" viewBox="0 0 13 21" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <path
