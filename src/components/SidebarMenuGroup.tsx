@@ -16,7 +16,7 @@ const SidebarMenuGroup = () => {
       <SidebarMenu link="/chart" title="Ranking" emoji={<RankingIcon fill />} />
       <SidebarMenu link="/#none" title="Notify" emoji={<NotiIcon fill />} />
       <SidebarMenu link="/#none" title="Vote" emoji={<VoteIcon fill />} />
-      <SidebarMenu link="/#none" title="Notice" emoji={<AnnounceIcon fill />} />
+      <SidebarMenu link="/notice" title="Notice" emoji={<AnnounceIcon fill />} />
     </div>
   );
 };
