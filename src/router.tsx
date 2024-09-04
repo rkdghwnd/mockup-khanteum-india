@@ -10,6 +10,7 @@ import MyWallet from "./components/Wallet/MyWallet";
 import WalletPassword from "./components/Wallet/WalletPassword";
 import Push from "./pages/Push";
 import Notice from "./components/Notice/Notice";
+import Notify from "./components/Notify/Notify";
 
 const Router = () => {
   // return <RouterProvider router={route} />;
@@ -26,6 +27,7 @@ const Router = () => {
       <Route path="/video" element={<Video />} />
       <Route path="/push" element={<Push />} />
       <Route path="/notice" element={<Notice />} />
+      <Route path="/notify" element={<Notify />} />
     </Routes>
   );
 };
