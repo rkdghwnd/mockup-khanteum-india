@@ -12,9 +12,9 @@ const SidebarMenuGroup = () => {
     <div className="w-full flex flex-col items-center space-y-3">
       <SidebarMenu link="/profile" title="My Profile" emoji={<SideProfileIcon fill />} />
       <SidebarMenu link="/walletPassword" title="My Wallet" emoji={<WalletIcon fill />} />
-      <SidebarMenu link="/" title="My Favorite" emoji={<BookmarkIcon fill />} />
+      <SidebarMenu link="/myFavorite" title="My Favorite" emoji={<BookmarkIcon fill />} />
       <SidebarMenu link="/chart" title="Ranking" emoji={<RankingIcon fill />} />
-      <SidebarMenu link="/#none" title="Notify" emoji={<NotiIcon fill />} />
+      <SidebarMenu link="/notify" title="Notify" emoji={<NotiIcon fill />} />
       <SidebarMenu link="/#none" title="Vote" emoji={<VoteIcon fill />} />
       <SidebarMenu link="/notice" title="Notice" emoji={<AnnounceIcon fill />} />
     </div>
