@@ -47,7 +47,7 @@ const SelectCategory = ({ className, selectList, ...args }: SelectCategoryProps)
         <span className="absolute top-1/2 -translate-y-1/2 right-3 md:right-5 cursor-pointer">| ▼</span>
       </div>
       {toggle && (
-        <div className="absolute top-full left-0 w-full h-[110px] overflow-hidden bg-[#46464666] backdrop-blur-sm rounded-[10px] shadow-2xl mt-1 px-6 animate-opacityOn Z-[1]">
+        <div className="absolute top-full left-0 w-full h-[110px] overflow-hidden bg-[#46464666] backdrop-blur-sm rounded-[10px] shadow-2xl mt-1 px-6 animate-opacityOn z-10">
           <div className="relative w-full  mt-2 ">
             <input
               type="text"

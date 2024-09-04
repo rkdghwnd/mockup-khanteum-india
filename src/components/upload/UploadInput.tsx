@@ -22,10 +22,10 @@ const UploadInput = ({ className, targetRef, placeholder, emoticon }: UploadInpu
   };
 
   return (
-    <label className={cn(" flex justify-between w-full cursor-pointer", className)}>
+    <label className={cn("relative flex justify-between w-full cursor-pointer", className)}>
       <input type="file" className="hidden" ref={targetRef} onChange={changeHandler} />
       <input
-        className="relative w-full h-[40px] px-3 cursor-pointer shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] bg-white mr-5  rounded-lg text-[#626262] text-sm"
+        className=" w-full h-[40px] px-3 cursor-pointer shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] bg-white mr-5  rounded-lg text-[#626262] text-sm"
         readOnly
         placeholder={placeholder}
         onClick={clickHandler}
