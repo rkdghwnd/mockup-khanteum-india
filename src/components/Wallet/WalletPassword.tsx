@@ -42,22 +42,22 @@ const WalletPassword = () => {
 
     return(
     <div className="flex w-full items-center justify-center mt-3 min-h-[150px]">
-         <div className=" w-4/5 min-w-[320px] h-full flex items-center flex-col">
-             <div className="flex flex-col w-full items-center justify-center">
+        <div className=" w-4/5 min-w-[320px] h-full flex items-center flex-col">
+            <div className="flex flex-col w-full items-center justify-center">
                 <div className="mt-12 mb-3">Please enter your password.</div>
                 <div className="mb-12 text-xs underline text-slate-500">Forgot your password?</div>
                 <div className="flex flex-row mb-10 items-center justify-center gap-3">
                     {[0,1,2,3,4,5].map((num) => (
-                            <input key={num} type="text" ref={(el) => (inputRef.current[num] = el)} className={box}/>
+                            <input key={num} type="text" maxLength={1} ref={(el) => (inputRef.current[num] = el)} className={box}/>
                     ))}
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                     {keypadArray.map((num, idx) => (
-                   <button onClick={handleKeypdClick} key={idx} value={idx+1} className={keypad}>{typeof(num)==="number" ? num : <img src={num} alt={String(idx)}/>}</button>
+                    <button onClick={handleKeypdClick} key={idx} value={idx+1} className={keypad}>{typeof(num)==="number" ? num : <img src={num} alt={String(idx)}/>}</button>
                     ))}
                 </div>
-             </div>
-         </div>
+            </div>
+        </div>
     </div>
     );
 }
