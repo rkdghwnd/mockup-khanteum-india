@@ -13,6 +13,7 @@ import Notice from "./components/Notice/Notice";
 import Notify from "./components/Notify/Notify";
 import Ranking from "./pages/Ranking";
 import Favorite from "./components/Favorite/Favorite";
+import Vote from "./components/Vote/Vote";
 
 const Router = () => {
   // return <RouterProvider router={route} />;
@@ -32,6 +33,7 @@ const Router = () => {
       <Route path="/notify" element={<Notify />} />
       <Route path="/chart" element={<Ranking />} />
       <Route path="/myFavorite" element={<Favorite />} />
+      <Route path="/vote" element={<Vote />} />
     </Routes>
   );
 };
