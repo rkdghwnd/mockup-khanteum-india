@@ -48,7 +48,7 @@ const WalletPassword = () => {
                 <div className="mb-12 text-xs underline text-slate-500">Forgot your password?</div>
                 <div className="flex flex-row mb-10 items-center justify-center gap-3">
                     {[0,1,2,3,4,5].map((num) => (
-                            <input key={num} type="text" maxLength={1} ref={(el) => (inputRef.current[num] = el)} className={box}/>
+                            <input key={num} type="text" disabled maxLength={1} ref={(el) => (inputRef.current[num] = el)} className={box}/>
                     ))}
                 </div>
                 <div className="grid grid-cols-3 gap-3">
