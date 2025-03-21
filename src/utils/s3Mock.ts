@@ -46,14 +46,14 @@ export const mapToDefaultFile = (file: File): string => {
 // 테스트를 위한 가상 S3 경로 생성 (URL 유일성 보장)
 export const createMockS3Url = (file: File): string => {
   // 실제 파일 대신 미리 준비된 파일 경로 사용
-  // if (import.meta.env.MODE !== "production") {
-  //   // 타임스탬프를 추가하여 URL 유일성 보장 (캐시 방지)
-  //   const timestamp = new Date().getTime();
-  //   const baseUrl = mapToDefaultFile(file);
+  if (import.meta.env.MODE !== "production") {
+    // 타임스탬프를 추가하여 URL 유일성 보장 (캐시 방지)
+    const timestamp = new Date().getTime();
+    const baseUrl = mapToDefaultFile(file);
 
-  //   // URL에 쿼리 파라미터 추가
-  //   return `${baseUrl}?v=${timestamp}`;
-  // }
+    // URL에 쿼리 파라미터 추가
+    return `${baseUrl}?v=${timestamp}`;
+  }
 
   // 개발 환경이 아닌 경우는 빈 문자열 반환
   return "";
