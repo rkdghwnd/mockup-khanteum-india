@@ -9,6 +9,11 @@ const S3_CONFIG = {
   bucketName: import.meta.env.VITE_S3_BUCKET_NAME,
 };
 
+// 브라우저 환경에서 AWS SDK 설정
+AWS.config.update({
+  region: S3_CONFIG.region,
+});
+
 // S3 클라이언트 초기화
 const s3 = new AWS.S3({
   accessKeyId: S3_CONFIG.accessKeyId,
@@ -28,12 +33,12 @@ const getS3Folder = (fileType: string): string => {
 
 // S3에 파일 업로드 후 URL 반환
 export const uploadFileToS3 = async (file: File): Promise<string> => {
-  // 개발/테스트 환경에서는 실제 S3 업로드 대신 로컬 서버에 임시 저장 경로 생성
-  if (import.meta.env.MODE !== "production") {
-    // 개발 환경에서는 Mock S3 URL 사용
+  // 개발 환경에서는 항상 Mock S3 URL 사용 (브라우저 호환성 문제 방지)
+  if (import.meta.env.MODE !== "production" || typeof window !== "undefined") {
     return createMockS3Url(file);
   }
 
+  // 아래 코드는 서버사이드에서만 실행됨
   // 파일 유형에 기반한 폴더 경로 결정
   const folder = getS3Folder(file.type);
 
@@ -71,8 +76,8 @@ export const uploadMultipleFiles = async (files: File[]): Promise<string[]> => {
 
 // S3에서 파일 삭제
 export const deleteFileFromS3 = async (fileUrl: string): Promise<boolean> => {
-  // 개발/테스트 환경에서는 실제 삭제 작업 스킵
-  if (import.meta.env.MODE !== "production") {
+  // 개발 환경 또는 브라우저에서는 실제 삭제 작업 스킵
+  if (import.meta.env.MODE !== "production" || typeof window !== "undefined") {
     return true;
   }
 
