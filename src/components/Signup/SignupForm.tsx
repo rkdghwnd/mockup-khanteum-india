@@ -77,11 +77,11 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
           </div>
         )}
 
-        <div className="w-[calc(100%-40px)] text-sm my-2">Name (선택사항)</div>
+        <div className="w-[calc(100%-40px)] text-sm my-2">Name (Optional)</div>
         <div className="relative w-[calc(100%-40px)] h-[38px] border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
           <input
             ref={nameRef}
-            placeholder="이름을 입력하세요"
+            placeholder="Please enter your name"
             type="text"
             name="name"
             className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
@@ -92,7 +92,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
         <div className="relative w-[calc(100%-40px)] h-[38px] border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
           <input
             ref={idRef}
-            placeholder="이메일을 입력하세요"
+            placeholder="Please enter your email"
             type="email"
             name="email"
             className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
@@ -103,7 +103,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
         <div className="relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
           <input
             ref={pwRef}
-            placeholder="비밀번호를 입력하세요"
+            placeholder="Please enter your password"
             type="password"
             name="password"
             maxLength={20}
@@ -112,13 +112,14 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
         </div>
 
         <div className="flex flex-row-reverse w-[calc(100%-40px)] text-sm text-[#b7b7b7] my-2">
-          4-20자리 영문, 숫자, 특수문자 조합
+          4-20 characters, combination of letters, numbers, and special
+          characters
         </div>
 
         <div className="relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
           <input
             ref={pw2Ref}
-            placeholder="비밀번호를 다시 입력하세요"
+            placeholder="Please re-enter your password"
             type="password"
             name="confirmPassword"
             maxLength={20}
@@ -132,7 +133,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
               type="button"
               className="rounded-3xl w-full text-[#d04bff] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r"
             >
-              취소
+              Cancel
             </button>
           </Link>
 
