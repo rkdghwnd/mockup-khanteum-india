@@ -7,14 +7,9 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
-  resolve: {
-    alias: {
-      "./runtimeConfig": "./runtimeConfig.browser",
-    },
-  },
   build: {
     commonjsOptions: {
-      include: [/aws-sdk/, /node_modules/],
+      include: [/node_modules/],
     },
   },
   server: {
