@@ -26,7 +26,7 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
 
       // 폼 검증
       if (!id || !pw) {
-        setError("이메일과 비밀번호를 입력해주세요.");
+        setError("Please enter your email and password.");
         return;
       }
 
@@ -44,7 +44,9 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
         navigate("/");
       } catch (err) {
         console.error("로그인 오류:", err);
-        setError(err instanceof Error ? err.message : "로그인에 실패했습니다.");
+        setError(
+          err instanceof Error ? err.message : "Login failed. Please try again."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -100,7 +102,7 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
           disabled={isLoading}
           className="rounded-3xl w-full text-[#d04bff] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r disabled:opacity-50"
         >
-          {isLoading ? "로그인 중..." : "Log In"}
+          {isLoading ? "Logging in..." : "Log In"}
         </button>
         <Link to="/signup">
           <button

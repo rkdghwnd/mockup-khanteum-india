@@ -38,11 +38,11 @@ const Video = () => {
           if (response.video) {
             setVideoData(response.video);
           } else {
-            setError("비디오를 찾을 수 없습니다.");
+            setError("Video not found.");
           }
         } catch (err) {
           console.error("비디오 데이터 가져오기 오류:", err);
-          setError("비디오 데이터를 가져오는데 실패했습니다.");
+          setError("Failed to load video data.");
         } finally {
           setIsLoading(false);
         }
@@ -82,7 +82,7 @@ const Video = () => {
     <section className="w-full h-[calc(100vh-105px)] relative bg-gradient-to-t from-slate-300 to-white via-blue-50">
       {isLoading ? (
         <div className="flex justify-center items-center h-full">
-          <p className="text-gray-500">비디오 로딩 중...</p>
+          <p className="text-gray-500">Loading video...</p>
         </div>
       ) : error ? (
         <div className="flex justify-center items-center h-full">

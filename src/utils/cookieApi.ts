@@ -44,12 +44,12 @@ export const authApi = {
     // 이메일 형식 확인
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      throw new Error("유효한 이메일 주소를 입력해주세요.");
+      throw new Error("Please enter a valid email address.");
     }
 
     // 비밀번호 유효성 검사
     if (password.length < 6) {
-      throw new Error("비밀번호는 최소 6자 이상이어야 합니다.");
+      throw new Error("Password must be at least 6 characters long.");
     }
 
     // 사용자 목록 가져오기
@@ -57,7 +57,7 @@ export const authApi = {
 
     // 이메일 중복 확인
     if (users.some((user) => user.email === email)) {
-      throw new Error("이미 사용 중인 이메일 주소입니다.");
+      throw new Error("This email is already in use.");
     }
 
     // 새 사용자 추가
@@ -88,7 +88,7 @@ export const authApi = {
     );
 
     if (!user) {
-      throw new Error("이메일 또는 비밀번호가 올바르지 않습니다.");
+      throw new Error("Invalid email or password.");
     }
 
     // 토큰 생성 (실제로는 JWT 등을 사용해야 함)
@@ -176,7 +176,7 @@ export const videoApi = {
   getMyVideos: async (): Promise<{ videos: Video[] }> => {
     const userId = getCurrentUserId();
     if (!userId) {
-      throw new Error("로그인이 필요합니다.");
+      throw new Error("Login required.");
     }
 
     const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
@@ -189,14 +189,14 @@ export const videoApi = {
   uploadVideo: async (formData: FormData): Promise<{ video: Video }> => {
     const userId = getCurrentUserId();
     if (!userId) {
-      throw new Error("로그인이 필요합니다.");
+      throw new Error("Login required.");
     }
 
     const users = getObjectCookie<User[]>(COOKIE_NAMES.USER_INFO) || [];
     const currentUser = users.find((u) => u.id === userId);
 
     if (!currentUser) {
-      throw new Error("사용자를 찾을 수 없습니다.");
+      throw new Error("User not found.");
     }
 
     // FormData에서 정보 추출
@@ -211,7 +211,7 @@ export const videoApi = {
     const videoFile = formData.get("video") as File;
 
     if (!title || !description || !category || !thumbnailFile || !videoFile) {
-      throw new Error("모든 필수 필드를 입력해주세요.");
+      throw new Error("Please fill in all required fields.");
     }
 
     // 새 비디오 객체 생성
@@ -242,18 +242,18 @@ export const videoApi = {
   deleteVideo: async (id: string): Promise<{ success: boolean }> => {
     const userId = getCurrentUserId();
     if (!userId) {
-      throw new Error("로그인이 필요합니다.");
+      throw new Error("Login required.");
     }
 
     const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
     const video = videos.find((v) => v.id === id);
 
     if (!video) {
-      throw new Error("비디오를 찾을 수 없습니다.");
+      throw new Error("Video not found.");
     }
 
     if (video.userId !== userId) {
-      throw new Error("자신이 업로드한 비디오만 삭제할 수 있습니다.");
+      throw new Error("You can only delete your own videos.");
     }
 
     const updatedVideos = videos.filter((v) => v.id !== id);
@@ -266,14 +266,14 @@ export const videoApi = {
   likeVideo: async (id: string): Promise<{ success: boolean }> => {
     const userId = getCurrentUserId();
     if (!userId) {
-      throw new Error("로그인이 필요합니다.");
+      throw new Error("Login required.");
     }
 
     const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
     const videoIndex = videos.findIndex((v) => v.id === id);
 
     if (videoIndex === -1) {
-      throw new Error("비디오를 찾을 수 없습니다.");
+      throw new Error("Video not found.");
     }
 
     // 좋아요 수 증가

@@ -30,22 +30,22 @@ const Upload = () => {
   const handleUpload = async () => {
     // 필수 입력값 검증
     if (!title) {
-      setError("제목을 입력해주세요.");
+      setError("Please enter a title.");
       return;
     }
 
     if (!description) {
-      setError("설명을 입력해주세요.");
+      setError("Please enter a description.");
       return;
     }
 
     if (!thumbnailFile) {
-      setError("썸네일을 선택해주세요.");
+      setError("Please select a thumbnail image.");
       return;
     }
 
     if (!videoFile) {
-      setError("비디오를 선택해주세요.");
+      setError("Please select a video file.");
       return;
     }
 
@@ -70,7 +70,9 @@ const Upload = () => {
     } catch (err) {
       console.error("비디오 업로드 오류:", err);
       setError(
-        err instanceof Error ? err.message : "비디오 업로드에 실패했습니다."
+        err instanceof Error
+          ? err.message
+          : "Video upload failed. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -104,7 +106,7 @@ const Upload = () => {
             onClick={handleUpload}
             disabled={isLoading}
           >
-            {isLoading ? "처리 중..." : "Registration"}
+            {isLoading ? "Processing..." : "Registration"}
           </button>
         </div>
       </div>

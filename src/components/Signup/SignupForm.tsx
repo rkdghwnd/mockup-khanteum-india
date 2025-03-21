@@ -30,12 +30,12 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
 
       // 폼 검증
       if (!id || !pw || !pw2) {
-        setError("모든 필드를 입력해주세요.");
+        setError("Please fill in all required fields.");
         return;
       }
 
       if (pw !== pw2) {
-        setError("비밀번호가 일치하지 않습니다.");
+        setError("Passwords do not match.");
         return;
       }
 
@@ -54,7 +54,9 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
       } catch (error) {
         console.error("회원가입 오류:", error);
         const errorMessage =
-          error instanceof Error ? error.message : "회원가입에 실패했습니다.";
+          error instanceof Error
+            ? error.message
+            : "Registration failed. Please try again.";
         setError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -139,7 +141,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
             disabled={isLoading}
             className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r disabled:opacity-50"
           >
-            {isLoading ? "회원가입 중..." : "회원가입"}
+            {isLoading ? "Signing up..." : "Sign Up"}
           </button>
         </div>
       </form>

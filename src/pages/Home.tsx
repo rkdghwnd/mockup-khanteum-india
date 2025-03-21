@@ -38,7 +38,7 @@ const Home = () => {
         setVideos(videosByCategory);
       } catch (err) {
         console.error("비디오 목록 가져오기 오류:", err);
-        setError("비디오 목록을 가져오는데 실패했습니다.");
+        setError("Failed to load video list.");
 
         // 에러 발생 시 더미 데이터 사용
         setVideos(transformDummyData());
@@ -87,7 +87,7 @@ const Home = () => {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
-          <p className="text-gray-500">비디오 로딩 중...</p>
+          <p className="text-gray-500">Loading videos...</p>
         </div>
       ) : error ? (
         <div className="flex justify-center items-center py-10">
