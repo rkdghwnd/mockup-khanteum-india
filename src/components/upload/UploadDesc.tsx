@@ -1,14 +1,26 @@
-import { cn } from "../../utils/util";
+import { ChangeEvent } from "react";
 
-const UploadDesc = ({ className }: { className?: string }) => {
+type UploadDescProps = {
+  className?: string;
+  value: string;
+  onChange: (value: string) => void;
+};
+
+const UploadDesc = ({ className, value, onChange }: UploadDescProps) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
+  };
+
   return (
-    <div className={cn("text-xs", className)}>
-      <p className="font-medium">Upload a Video</p>
-      <p className="text-[9px] pl-2 pt-2 text-[#b7b7b7]">
-        ※ You can only upload videos of your talents. Also, you need to upload a video that identifies your face, If not, you may be disadvantaged by
-        everyone's start-up audition, so please refer to it. If you do not register a thumbnail separately, the image captured from the video will be
-        used.
-      </p>
+    <div className={`w-full mt-4 ${className || ""}`}>
+      <div className="text-base">Title</div>
+      <input
+        type="text"
+        className="w-full h-[40px] px-3 shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] bg-white mt-1 rounded-lg text-[#626262]"
+        placeholder="Please enter a title"
+        value={value}
+        onChange={handleChange}
+      />
     </div>
   );
 };

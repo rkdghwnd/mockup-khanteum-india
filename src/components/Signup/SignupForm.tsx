@@ -1,123 +1,146 @@
 import { FormEvent, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 type SignupFormProps = {
   formAction: ({ id, pw }: { id: string; pw: string }) => void;
 };
 
 const SignupForm = ({ formAction }: SignupFormProps) => {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const idRef = useRef<HTMLInputElement>(null);
-  const verifyIdRef = useRef<HTMLInputElement>(null);
   const pwRef = useRef<HTMLInputElement>(null);
   const pw2Ref = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
-  const sendRef = useRef<HTMLButtonElement>(null);
-  const verifyDoneRef = useRef<HTMLButtonElement>(null);
+  // 인증 컨텍스트 사용
+  const { signup } = useAuth();
 
-  const formHandler = (e: FormEvent) => {
+  const formHandler = async (e: FormEvent) => {
     e.preventDefault();
-    if (idRef.current && pwRef.current) {
+
+    if (idRef.current && pwRef.current && pw2Ref.current) {
       const id = idRef.current.value;
       const pw = pwRef.current.value;
-      formAction({ id, pw });
+      const pw2 = pw2Ref.current.value;
+      const name = nameRef.current?.value;
+
+      // 폼 검증
+      if (!id || !pw || !pw2) {
+        setError("모든 필드를 입력해주세요.");
+        return;
+      }
+
+      if (pw !== pw2) {
+        setError("비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        // 인증 컨텍스트를 통한 회원가입
+        await signup(id, pw, name);
+
+        // 이전 코드와의 호환성을 위해 formAction도 호출
+        formAction({ id, pw });
+
+        // 회원가입 성공 시 로그인 페이지로 이동
+        navigate("/login");
+      } catch (error) {
+        console.error("회원가입 오류:", error);
+        const errorMessage =
+          error instanceof Error ? error.message : "회원가입에 실패했습니다.";
+        setError(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
-
-  const [showInput, setShowInput] = useState(false);
-  const [showPasswordInput, setShowPasswordInput] = useState(false);
-  const showVerifyInput = () => setShowInput(true);
-  const showPassInput = () => setShowPasswordInput(true);
 
   return (
     <>
       <div className="my-4 text-2xl">Create an account</div>
-      <form className="flex flex-col items-center mt-12 w-full" onSubmit={formHandler}>
-        <div className="w-[calc(100%-40px)] text-sm my-2">
-            Email
-        </div>
-        <div className="relative w-[calc(100%-40px)] h-[38px]  border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
+      <form
+        className="flex flex-col items-center mt-12 w-full"
+        onSubmit={formHandler}
+      >
+        {error && (
+          <div className="w-[calc(100%-40px)] mb-4 p-2 text-red-500 text-sm bg-red-50 rounded-md">
+            {error}
+          </div>
+        )}
+
+        <div className="w-[calc(100%-40px)] text-sm my-2">Name (선택사항)</div>
+        <div className="relative w-[calc(100%-40px)] h-[38px] border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
           <input
-            ref={idRef}
-            placeholder="Please enter your email address"
+            ref={nameRef}
+            placeholder="이름을 입력하세요"
             type="text"
-            name=""
-            id=""
+            name="name"
             className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
           />
-          <span className="absolute w-[50px] h-[25px] right-0 top-1/2 -translate-y-1/2 flex items-center justify-center border-r-[1px]  border-[#b7b7b7]">
-            <button className="w-[50px] h-[20px] mr-2 text-xs bg-[#b7b7b7] text-white rounded-xl" ref={sendRef} onClick={showVerifyInput}>전송</button>
-          </span>
         </div>
-        { showInput ?
-          (<div className="relative w-[calc(100%-40px)] h-[38px]  border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden mt-2">
-            <input
-              ref={verifyIdRef}
-              placeholder="Enter 6-digit authentication number"
-              type="text"
-              name=""
-              id=""
-              maxLength={6}
-              className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
-            />
-            <span className="absolute w-[50px] h-[25px] right-0 top-1/2 -translate-y-1/2 flex items-center justify-center border-r-[1px]  border-[#b7b7b7]">
-              <button className="w-[50px] h-[20px] mr-2 text-xs bg-[#b7b7b7] text-white rounded-xl" ref={verifyDoneRef} onClick={showPassInput}>인증</button>
-            </span>
-          </div>) : <div></div>
-        }
-        
-        
-        { 
-          showPasswordInput ? 
-          <>
-            <div className="w-[calc(100%-40px)] text-sm mt-4">
-              Password
-            </div>
-            <div className=" relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
-              <input
-                ref={pwRef}
-                placeholder="Please enter your password"
-                type="password"
-                name=""
-                id=""
-                maxLength={20}
-                className="w-full  h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
-              />
-            </div>
 
-            <div className="flex flex-row-reverse w-[calc(100%-40px)] text-sm text-[#b7b7b7] my-2">
-              8-20-digits of English, number, and special character combinations
-            </div>
+        <div className="w-[calc(100%-40px)] text-sm mt-4">Email</div>
+        <div className="relative w-[calc(100%-40px)] h-[38px] border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
+          <input
+            ref={idRef}
+            placeholder="이메일을 입력하세요"
+            type="email"
+            name="email"
+            className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
+          />
+        </div>
 
-            <div className=" relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
-              <input
-                ref={pw2Ref}
-                placeholder="Please re-enter your password"
-                type="password"
-                name=""
-                id=""
-                maxLength={20}
-                className="w-full  h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
-              />
-            </div>
-          </> : <div></div>
-        }
+        <div className="w-[calc(100%-40px)] text-sm mt-4">Password</div>
+        <div className="relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
+          <input
+            ref={pwRef}
+            placeholder="비밀번호를 입력하세요"
+            type="password"
+            name="password"
+            maxLength={20}
+            className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
+          />
+        </div>
+
+        <div className="flex flex-row-reverse w-[calc(100%-40px)] text-sm text-[#b7b7b7] my-2">
+          4-20자리 영문, 숫자, 특수문자 조합
+        </div>
+
+        <div className="relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
+          <input
+            ref={pw2Ref}
+            placeholder="비밀번호를 다시 입력하세요"
+            type="password"
+            name="confirmPassword"
+            maxLength={20}
+            className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
+          />
+        </div>
+
         <div className="w-[calc(100%-40px)] flex flex-col space-y-3 mt-8">
-        <Link to="/">
-          <button
-            type="button"
-            className="rounded-3xl w-full text-[#d04bff] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r "
-          >
-            Cancel
-          </button>
-        </Link>
-        <Link to="/">
-          <button
-            type="button"
-            className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r"
-          >
-            Sign up
-          </button>
+          <Link to="/login">
+            <button
+              type="button"
+              className="rounded-3xl w-full text-[#d04bff] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r"
+            >
+              취소
+            </button>
           </Link>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r disabled:opacity-50"
+          >
+            {isLoading ? "회원가입 중..." : "회원가입"}
+          </button>
         </div>
       </form>
     </>
