@@ -29,10 +29,10 @@ const getS3Folder = (fileType: string): string => {
 // S3에 파일 업로드 후 URL 반환
 export const uploadFileToS3 = async (file: File): Promise<string> => {
   // 개발/테스트 환경에서는 실제 S3 업로드 대신 로컬 서버에 임시 저장 경로 생성
-  // if (process.env.NODE_ENV !== "production") {
-  //   // 개발 환경에서는 Mock S3 URL 사용
-  //   return createMockS3Url(file);
-  // }
+  if (import.meta.env.MODE !== "production") {
+    // 개발 환경에서는 Mock S3 URL 사용
+    return createMockS3Url(file);
+  }
 
   // 파일 유형에 기반한 폴더 경로 결정
   const folder = getS3Folder(file.type);
