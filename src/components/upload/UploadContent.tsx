@@ -23,6 +23,8 @@ const UploadContent = ({
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const handleThumbnailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log(videoFile, thumbnailFile);
+
     const files = e.target.files;
     if (files && files.length > 0) {
       setThumbnailFile(files[0]);
