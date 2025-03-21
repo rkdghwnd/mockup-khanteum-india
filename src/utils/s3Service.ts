@@ -72,7 +72,7 @@ export const uploadMultipleFiles = async (files: File[]): Promise<string[]> => {
 // S3에서 파일 삭제
 export const deleteFileFromS3 = async (fileUrl: string): Promise<boolean> => {
   // 개발/테스트 환경에서는 실제 삭제 작업 스킵
-  if (process.env.NODE_ENV !== "production") {
+  if (import.meta.env.MODE !== "production") {
     return true;
   }
 
