@@ -46,7 +46,7 @@ export const mapToDefaultFile = (file: File): string => {
 // 테스트를 위한 가상 S3 경로 생성 (URL 유일성 보장)
 export const createMockS3Url = (file: File): string => {
   // 실제 파일 대신 미리 준비된 파일 경로 사용
-  if (process.env.NODE_ENV !== "production") {
+  if (import.meta.env.MODE !== "production") {
     // 타임스탬프를 추가하여 URL 유일성 보장 (캐시 방지)
     const timestamp = new Date().getTime();
     const baseUrl = mapToDefaultFile(file);
