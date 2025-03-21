@@ -1,6 +1,7 @@
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import { createMockS3Url } from "./s3Mock";
+// import { createMockS3Url } from "./s3Mock";
+import { Buffer } from "buffer";
 
 // S3 설정 (실제 배포 시에는 환경 변수로 관리해야 함)
 const S3_CONFIG = {
@@ -31,9 +32,9 @@ const getS3Folder = (fileType: string): string => {
 // S3에 파일 업로드 후 URL 반환
 export const uploadFileToS3 = async (file: File): Promise<string> => {
   // 개발 환경에서는 항상 Mock S3 URL 사용
-  if (import.meta.env.MODE !== "production") {
-    return createMockS3Url(file);
-  }
+  // if (import.meta.env.MODE !== "production") {
+  //   return createMockS3Url(file);
+  // }
 
   // 파일 유형에 기반한 폴더 경로 결정
   const folder = getS3Folder(file.type);
@@ -92,9 +93,9 @@ export const uploadMultipleFiles = async (files: File[]): Promise<string[]> => {
 // S3에서 파일 삭제
 export const deleteFileFromS3 = async (fileUrl: string): Promise<boolean> => {
   // 개발 환경에서는 실제 삭제 작업 스킵
-  if (import.meta.env.MODE !== "production") {
-    return true;
-  }
+  // if (import.meta.env.MODE !== "production") {
+  //   return true;
+  // }
 
   try {
     // URL에서 키(Key) 추출

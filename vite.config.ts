@@ -7,6 +7,11 @@ export default defineConfig({
   define: {
     global: "globalThis",
   },
+  resolve: {
+    alias: {
+      buffer: "buffer/",
+    },
+  },
   build: {
     commonjsOptions: {
       include: [/node_modules/],
