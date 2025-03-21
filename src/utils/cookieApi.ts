@@ -6,6 +6,7 @@ import {
   setCookie,
   getCookie,
 } from "./cookieStorage";
+import { uploadFileToS3 } from "./s3Service";
 
 // 사용자 타입 정의
 export interface User {
@@ -214,28 +215,39 @@ export const videoApi = {
       throw new Error("Please fill in all required fields.");
     }
 
-    // 새 비디오 객체 생성
-    const newVideo: Video = {
-      id: generateId(),
-      title,
-      description,
-      category,
-      userId,
-      userName: currentUser.name,
-      videoSrc: URL.createObjectURL(videoFile), // 실제로는 서버에 업로드하고 URL을 받아야 함
-      thumbnail: URL.createObjectURL(thumbnailFile), // 실제로는 서버에 업로드하고 URL을 받아야 함
-      copyright: copyright || "모든 권리 보유",
-      views: 0,
-      likes: 0,
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      // S3에 파일 업로드
+      const thumbnailUrl = await uploadFileToS3(thumbnailFile);
+      const videoUrl = await uploadFileToS3(videoFile);
 
-    // 비디오 목록에 추가
-    const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
-    videos.push(newVideo);
-    setObjectCookie(COOKIE_NAMES.VIDEOS, videos);
+      console.log(thumbnailUrl, videoUrl);
 
-    return { video: newVideo };
+      // 새 비디오 객체 생성
+      const newVideo: Video = {
+        id: generateId(),
+        title,
+        description,
+        category,
+        userId,
+        userName: currentUser.name,
+        videoSrc: videoUrl, // S3 URL 사용
+        thumbnail: thumbnailUrl, // S3 URL 사용
+        copyright: copyright || "All rights reserved",
+        views: 0,
+        likes: 0,
+        createdAt: new Date().toISOString(),
+      };
+
+      // 비디오 목록에 추가
+      const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
+      videos.push(newVideo);
+      setObjectCookie(COOKIE_NAMES.VIDEOS, videos);
+
+      return { video: newVideo };
+    } catch (error) {
+      console.error("비디오 업로드 오류:", error);
+      throw error;
+    }
   },
 
   // 비디오 삭제

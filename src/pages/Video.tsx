@@ -10,7 +10,7 @@ const Video = () => {
   // url로 전달하는 video 주소와 ID
   const videoSrc = searchParams.get("videoSrc");
   const videoId = searchParams.get("id");
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   // 비디오 플레이 정지에 따른 정지 이모티콘 변화할 상태
   const [isPlay, setIsPlay] = useState(true);
@@ -37,6 +37,14 @@ const Video = () => {
           const response = await videoApi.getVideo(videoId);
           if (response.video) {
             setVideoData(response.video);
+
+            // 비디오 데이터가 로드되면 videoRef에 소스 설정
+            if (videoRef.current && response.video.videoSrc) {
+              videoRef.current.src = response.video.videoSrc;
+              videoRef.current.load();
+
+              videoRef.current.play();
+            }
           } else {
             setError("Video not found.");
           }
@@ -54,11 +62,43 @@ const Video = () => {
     fetchVideoData();
   }, [videoId]);
 
-  // 비디오 페이지 들어올시 자동 실행
+  // 비디오 페이지 들어올시 자동 실행 및 새로고침시에도 자동 재생
   useEffect(() => {
-    videoRef.current?.play();
-    if (videoRef.current?.paused) setIsPlay(false);
-  }, []);
+    const playVideo = async () => {
+      try {
+        if (videoRef.current) {
+          const playPromise = videoRef.current.play();
+          if (playPromise !== undefined) {
+            await playPromise;
+            setIsPlay(true);
+          }
+        }
+      } catch (error) {
+        console.error("비디오 자동 재생 실패:", error);
+        setIsPlay(false);
+      }
+    };
+
+    // 비디오 데이터가 로드되었거나 직접 URL이 제공된 경우에만 재생 시도
+    if (!isLoading && (videoData?.videoSrc || videoSrc)) {
+      playVideo();
+    }
+
+    // 페이지 가시성 변경 이벤트 리스너 추가
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && videoRef.current) {
+        videoRef.current
+          .play()
+          .catch((err) => console.error("재생 실패:", err));
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isLoading, videoData, videoSrc]);
 
   // 좋아요 클릭 핸들러
   const handleLike = async () => {
