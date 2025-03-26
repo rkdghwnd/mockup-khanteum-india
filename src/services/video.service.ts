@@ -128,9 +128,29 @@ export const videoService = {
         console.error("조회수 증가 오류:", viewError);
       }
 
-      // 사용자 정보 가져오기 (인증 여부 확인)
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData.user?.id;
+      // 현재 로그인한 사용자 확인
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError) {
+        // 느슨한 정책: 익명 로그인 시도
+        const { data: anonData, error: anonError } =
+          await supabase.auth.signInAnonymously();
+        if (anonError) throw new Error("로그인이 필요합니다.");
+        // 익명 사용자로 계속 진행
+        if (anonData && anonData.user) {
+          const updatedUserData = { ...userData, user: anonData.user };
+          Object.assign(userData, updatedUserData);
+        } else {
+          // 느슨한 정책: 인증되지 않은 경우 빈 배열 반환
+          return { video: null };
+        }
+      }
+
+      if (!userData.user) {
+        // 느슨한 정책: 인증되지 않은 경우 빈 배열 반환
+        return { video: null };
+      }
 
       // 비디오 상세 정보 조회
       const { data, error } = await supabase
@@ -145,7 +165,10 @@ export const videoService = {
         `
         )
         .eq("id", id)
-        .eq("likes.user_id", userId || "00000000-0000-0000-0000-000000000000")
+        .eq(
+          "likes.user_id",
+          userData.user.id || "00000000-0000-0000-0000-000000000000"
+        )
         .single();
 
       if (error) {
@@ -310,7 +333,8 @@ export const videoService = {
         if (anonError) throw new Error("로그인이 필요합니다.");
         // 익명 사용자로 계속 진행
         if (anonData && anonData.user) {
-          userData.user = anonData.user;
+          const updatedUserData = { ...userData, user: anonData.user };
+          Object.assign(userData, updatedUserData);
         } else {
           throw new Error("익명 로그인에 실패했습니다.");
         }
@@ -409,7 +433,8 @@ export const videoService = {
         if (anonError) throw new Error("로그인이 필요합니다.");
         // 익명 사용자로 계속 진행
         if (anonData && anonData.user) {
-          userData.user = anonData.user;
+          const updatedUserData = { ...userData, user: anonData.user };
+          Object.assign(userData, updatedUserData);
         } else {
           throw new Error("익명 로그인에 실패했습니다.");
         }
@@ -496,7 +521,8 @@ export const videoService = {
         if (anonError) throw new Error("로그인이 필요합니다.");
         // 익명 사용자로 계속 진행
         if (anonData && anonData.user) {
-          userData.user = anonData.user;
+          const updatedUserData = { ...userData, user: anonData.user };
+          Object.assign(userData, updatedUserData);
         } else {
           throw new Error("익명 로그인에 실패했습니다.");
         }
