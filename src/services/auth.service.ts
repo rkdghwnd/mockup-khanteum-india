@@ -40,7 +40,7 @@ export const authService = {
       });
 
       if (error) {
-        console.log("회원가입 오류:", error.message);
+        console.log("Signup error:", error.message);
         throw error;
       }
 
@@ -52,7 +52,7 @@ export const authService = {
 
       return { success: true };
     } catch (error: unknown) {
-      console.error("회원가입 오류:", error);
+      console.error("Signup error:", error);
 
       // 느슨한 인증 정책: 이메일 형식이 아니어도 허용하기 위한 임시 처리
       if (error instanceof Error && error.message.includes("valid email")) {
@@ -79,7 +79,7 @@ export const authService = {
             return { success: true };
           }
         } catch (retryError) {
-          console.error("회원가입 재시도 오류:", retryError);
+          console.error("Signup retry error:", retryError);
         }
       }
 
@@ -88,7 +88,7 @@ export const authService = {
         error:
           error instanceof Error
             ? error.message
-            : "회원가입 처리 중 오류가 발생했습니다.",
+            : "An error occurred during signup.",
       };
     }
   },
@@ -133,12 +133,12 @@ export const authService = {
           }
 
           // 그래도 실패하면 오류 발생
-          throw new Error("로그인에 실패했습니다.");
+          throw new Error("Login failed");
         }
         throw error;
       }
 
-      if (!data.user) throw new Error("사용자 정보를 찾을 수 없습니다.");
+      if (!data.user) throw new Error("User information not found");
 
       // 사용자 정보 형식 변환
       const user: User = {
@@ -152,7 +152,7 @@ export const authService = {
 
       return { success: true, user };
     } catch (error: unknown) {
-      console.error("로그인 오류:", error);
+      console.error("Login error:", error);
 
       // 느슨한 인증 정책: 모든 인증 실패 시 익명 로그인 시도
       try {
@@ -164,14 +164,14 @@ export const authService = {
           const user: User = {
             id: anonData.user.id,
             email: "guest@example.com",
-            name: "게스트 사용자",
+            name: "Guest User",
             profileImage: null,
             createdAt: anonData.user.created_at,
           };
           return { success: true, user };
         }
       } catch (anonError) {
-        console.error("익명 로그인 오류:", anonError);
+        console.error("Anonymous login error:", anonError);
       }
 
       return {
@@ -179,7 +179,7 @@ export const authService = {
         error:
           error instanceof Error
             ? error.message
-            : "로그인 처리 중 오류가 발생했습니다.",
+            : "An error occurred during login.",
       };
     }
   },
@@ -193,7 +193,7 @@ export const authService = {
       if (error) throw error;
       return { success: true };
     } catch (error: unknown) {
-      console.error("로그아웃 오류:", error);
+      console.error("Logout error:", error);
       // 느슨한 인증: 로그아웃 오류가 발생해도 성공으로 처리
       return { success: true };
     }
@@ -215,7 +215,7 @@ export const authService = {
           const user: User = {
             id: anonData.user.id,
             email: "guest@example.com",
-            name: "게스트 사용자",
+            name: "Guest User",
             profileImage: null,
             createdAt: anonData.user.created_at,
           };
@@ -232,20 +232,20 @@ export const authService = {
         name:
           data.user.user_metadata?.name ||
           data.user.email?.split("@")[0] ||
-          "사용자",
+          "User",
         profileImage: data.user.user_metadata?.profile_image,
         createdAt: data.user.created_at,
       };
 
       return { user };
     } catch (error: unknown) {
-      console.error("사용자 정보 조회 오류:", error);
+      console.error("User info lookup error:", error);
       return {
         user: null,
         error:
           error instanceof Error
             ? error.message
-            : "사용자 정보 조회 중 오류가 발생했습니다.",
+            : "An error occurred while retrieving user information.",
       };
     }
   },
@@ -258,7 +258,7 @@ export const authService = {
       const { data } = await supabase.auth.getSession();
       return !!data.session;
     } catch (error) {
-      console.error("인증 확인 오류:", error);
+      console.error("Authentication check error:", error);
       // 느슨한 인증: 오류 발생해도 인증된 것으로 간주
       return true;
     }

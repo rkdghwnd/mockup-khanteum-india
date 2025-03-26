@@ -68,7 +68,6 @@ export const videoService = {
     category?: string
   ): Promise<{ videos: Video[]; error?: string }> => {
     try {
-      // 기본 쿼리 생성
       let query = supabase.from("videos").select(`
         *,
         users(name, profile_image),
@@ -76,19 +75,16 @@ export const videoService = {
         comments_count:comments(count)
       `);
 
-      // 카테고리가 있으면 필터링
       if (category && category !== "Official") {
         query = query.eq("category", category);
       }
 
-      // 최신순으로 정렬
       const { data, error } = await query.order("created_at", {
         ascending: false,
       });
 
       if (error) throw error;
 
-      // 비디오 데이터 형식 변환
       const videos: Video[] = (data || []).map((item: VideoData) => ({
         id: item.id,
         title: item.title,
@@ -107,8 +103,7 @@ export const videoService = {
 
       return { videos };
     } catch (error: unknown) {
-      console.error("비디오 목록 조회 오류:", error);
-      // 느슨한 정책: 오류 발생 시 빈 배열 반환
+      console.error("Error fetching video list:", error);
       return { videos: [] };
     }
   },
@@ -121,38 +116,12 @@ export const videoService = {
     id: string
   ): Promise<{ video: Video | null; error?: string }> => {
     try {
-      // 조회수 증가 (느슨한 정책: 오류 발생 시 무시)
       try {
         await supabase.rpc("increment_view_count", { video_id: id });
       } catch (viewError) {
-        console.error("조회수 증가 오류:", viewError);
+        console.error("Error incrementing view count:", viewError);
       }
 
-      // 현재 로그인한 사용자 확인
-      const { data: userData, error: userError } =
-        await supabase.auth.getUser();
-
-      if (userError) {
-        // 느슨한 정책: 익명 로그인 시도
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("로그인이 필요합니다.");
-        // 익명 사용자로 계속 진행
-        if (anonData && anonData.user) {
-          const updatedUserData = { ...userData, user: anonData.user };
-          Object.assign(userData, updatedUserData);
-        } else {
-          // 느슨한 정책: 인증되지 않은 경우 빈 배열 반환
-          return { video: null };
-        }
-      }
-
-      if (!userData.user) {
-        // 느슨한 정책: 인증되지 않은 경우 빈 배열 반환
-        return { video: null };
-      }
-
-      // 비디오 상세 정보 조회
       const { data, error } = await supabase
         .from("videos")
         .select(
@@ -160,63 +129,15 @@ export const videoService = {
           *,
           users(name, profile_image),
           likes_count:likes(count),
-          comments_count:comments(count),
-          user_has_liked:likes!inner(user_id)
+          comments_count:comments(count)
         `
         )
         .eq("id", id)
-        .eq(
-          "likes.user_id",
-          userData.user.id || "00000000-0000-0000-0000-000000000000"
-        )
         .single();
 
-      if (error) {
-        if (error.code === "PGRST116") {
-          // 좋아요 정보가 없는 경우 (not found)
-          const { data: videoOnly, error: videoError } = await supabase
-            .from("videos")
-            .select(
-              `
-              *,
-              users(name, profile_image),
-              likes_count:likes(count),
-              comments_count:comments(count)
-            `
-            )
-            .eq("id", id)
-            .single();
-
-          if (videoError) throw videoError;
-          if (!videoOnly) return { video: null };
-
-          // 비디오 데이터 형식 변환
-          const videoData = videoOnly as VideoData;
-          const video: Video = {
-            id: videoData.id,
-            title: videoData.title,
-            description: videoData.description,
-            category: videoData.category,
-            userId: videoData.user_id,
-            userName: videoData.users?.name,
-            videoSrc: videoData.video_url,
-            thumbnail: videoData.thumbnail_url,
-            copyright: videoData.copyright,
-            views: videoData.views,
-            createdAt: videoData.created_at,
-            likesCount: videoData.likes_count || 0,
-            commentsCount: videoData.comments_count || 0,
-            userHasLiked: false,
-          };
-
-          return { video };
-        }
-        throw error;
-      }
-
+      if (error) throw error;
       if (!data) return { video: null };
 
-      // 비디오 데이터 형식 변환
       const videoData = data as VideoData;
       const video: Video = {
         id: videoData.id,
@@ -232,18 +153,18 @@ export const videoService = {
         createdAt: videoData.created_at,
         likesCount: videoData.likes_count || 0,
         commentsCount: videoData.comments_count || 0,
-        userHasLiked: !!videoData.user_has_liked,
+        userHasLiked: false,
       };
 
       return { video };
     } catch (error: unknown) {
-      console.error("비디오 상세 조회 오류:", error);
+      console.error("Error fetching video details:", error);
       return {
         video: null,
         error:
           error instanceof Error
             ? error.message
-            : "비디오 정보를 가져오는 중 오류가 발생했습니다.",
+            : "An error occurred while fetching video information.",
       };
     }
   },
@@ -253,22 +174,18 @@ export const videoService = {
    */
   getMyVideos: async (): Promise<{ videos: Video[]; error?: string }> => {
     try {
-      // 현재 로그인한 사용자 정보 가져오기
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
       if (userError) {
-        // 느슨한 정책: 인증 오류 시 빈 배열 반환
-        console.error("인증 오류:", userError);
+        console.error("Authentication error:", userError);
         return { videos: [] };
       }
 
       if (!userData.user) {
-        // 느슨한 정책: 인증되지 않은 경우 빈 배열 반환
         return { videos: [] };
       }
 
-      // 사용자의 비디오 목록 조회
       const { data, error } = await supabase
         .from("videos")
         .select(
@@ -284,7 +201,6 @@ export const videoService = {
 
       if (error) throw error;
 
-      // 비디오 데이터 형식 변환
       const videos: Video[] = (data || []).map((item: VideoData) => ({
         id: item.id,
         title: item.title,
@@ -303,8 +219,7 @@ export const videoService = {
 
       return { videos };
     } catch (error: unknown) {
-      console.error("내 비디오 목록 조회 오류:", error);
-      // 느슨한 정책: 오류 발생 시 빈 배열 반환
+      console.error("Error fetching my videos:", error);
       return { videos: [] };
     }
   },
@@ -322,27 +237,23 @@ export const videoService = {
     copyright: string;
   }): Promise<{ success: boolean; video?: Video; error?: string }> => {
     try {
-      // 현재 로그인한 사용자 확인
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
       if (userError) {
-        // 느슨한 정책: 익명 로그인 시도
         const { data: anonData, error: anonError } =
           await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("로그인이 필요합니다.");
-        // 익명 사용자로 계속 진행
+        if (anonError) throw new Error("Login required");
         if (anonData && anonData.user) {
           const updatedUserData = { ...userData, user: anonData.user };
           Object.assign(userData, updatedUserData);
         } else {
-          throw new Error("익명 로그인에 실패했습니다.");
+          throw new Error("Anonymous login failed");
         }
       }
 
-      if (!userData.user) throw new Error("로그인이 필요합니다.");
+      if (!userData.user) throw new Error("Login required");
 
-      // 1. 썸네일 이미지 업로드
       const thumbnailFileName = `${uuidv4()}-${uploadData.thumbnailFile.name}`;
       const { error: thumbnailError } = await supabase.storage
         .from("thumbnails")
@@ -350,12 +261,10 @@ export const videoService = {
 
       if (thumbnailError) throw thumbnailError;
 
-      // 썸네일 공개 URL 가져오기
       const { data: thumbnailData } = await supabase.storage
         .from("thumbnails")
         .getPublicUrl(thumbnailFileName);
 
-      // 2. 비디오 파일 업로드
       const videoFileName = `${uuidv4()}-${uploadData.videoFile.name}`;
       const { error: videoError } = await supabase.storage
         .from("videos")
@@ -363,12 +272,10 @@ export const videoService = {
 
       if (videoError) throw videoError;
 
-      // 비디오 공개 URL 가져오기
       const { data: videoUrlData } = await supabase.storage
         .from("videos")
         .getPublicUrl(videoFileName);
 
-      // 3. 비디오 정보 데이터베이스에 저장
       const { data: insertData, error: insertError } = await supabase
         .from("videos")
         .insert({
@@ -385,7 +292,6 @@ export const videoService = {
 
       if (insertError) throw insertError;
 
-      // 업로드 성공한 비디오 데이터 반환
       const video: Video = {
         id: insertData.id,
         title: insertData.title,
@@ -403,13 +309,13 @@ export const videoService = {
 
       return { success: true, video };
     } catch (error: unknown) {
-      console.error("비디오 업로드 오류:", error);
+      console.error("Error uploading video:", error);
       return {
         success: false,
         error:
           error instanceof Error
             ? error.message
-            : "비디오 업로드 중 오류가 발생했습니다.",
+            : "An error occurred while uploading the video.",
       };
     }
   },
@@ -422,27 +328,23 @@ export const videoService = {
     videoId: string
   ): Promise<{ success: boolean; liked?: boolean; error?: string }> => {
     try {
-      // 사용자 확인
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
       if (userError) {
-        // 느슨한 정책: 익명 로그인 시도
         const { data: anonData, error: anonError } =
           await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("로그인이 필요합니다.");
-        // 익명 사용자로 계속 진행
+        if (anonError) throw new Error("Login required");
         if (anonData && anonData.user) {
           const updatedUserData = { ...userData, user: anonData.user };
           Object.assign(userData, updatedUserData);
         } else {
-          throw new Error("익명 로그인에 실패했습니다.");
+          throw new Error("Anonymous login failed");
         }
       }
 
-      if (!userData.user) throw new Error("로그인이 필요합니다.");
+      if (!userData.user) throw new Error("Login required");
 
-      // 좋아요 토글 함수 호출
       const { data, error } = await supabase.rpc("toggle_like", {
         video_id: videoId,
       });
@@ -451,13 +353,13 @@ export const videoService = {
 
       return { success: true, liked: data };
     } catch (error: unknown) {
-      console.error("좋아요 토글 오류:", error);
+      console.error("Error toggling like:", error);
       return {
         success: false,
         error:
           error instanceof Error
             ? error.message
-            : "좋아요 처리 중 오류가 발생했습니다.",
+            : "An error occurred while processing the like.",
       };
     }
   },
@@ -494,8 +396,7 @@ export const videoService = {
 
       return { comments };
     } catch (error: unknown) {
-      console.error("댓글 조회 오류:", error);
-      // 느슨한 정책: 오류 발생 시 빈 배열 반환
+      console.error("Error fetching comments:", error);
       return { comments: [] };
     }
   },
@@ -510,27 +411,23 @@ export const videoService = {
     content: string
   ): Promise<{ success: boolean; comment?: Comment; error?: string }> => {
     try {
-      // 사용자 확인
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
       if (userError) {
-        // 느슨한 정책: 익명 로그인 시도
         const { data: anonData, error: anonError } =
           await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("로그인이 필요합니다.");
-        // 익명 사용자로 계속 진행
+        if (anonError) throw new Error("Login required");
         if (anonData && anonData.user) {
           const updatedUserData = { ...userData, user: anonData.user };
           Object.assign(userData, updatedUserData);
         } else {
-          throw new Error("익명 로그인에 실패했습니다.");
+          throw new Error("Anonymous login failed");
         }
       }
 
-      if (!userData.user) throw new Error("로그인이 필요합니다.");
+      if (!userData.user) throw new Error("Login required");
 
-      // 댓글 추가
       const { data, error } = await supabase
         .from("comments")
         .insert({
@@ -559,13 +456,13 @@ export const videoService = {
 
       return { success: true, comment };
     } catch (error: unknown) {
-      console.error("댓글 작성 오류:", error);
+      console.error("Error adding comment:", error);
       return {
         success: false,
         error:
           error instanceof Error
             ? error.message
-            : "댓글 작성 중 오류가 발생했습니다.",
+            : "An error occurred while adding the comment.",
       };
     }
   },

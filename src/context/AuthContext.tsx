@@ -72,12 +72,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { success, user, error } = await authService.login(email, password);
 
       if (!success || error) {
-        throw new Error(error || "로그인 실패");
+        throw new Error(error || "login failed");
       }
 
       setUser(user || null);
     } catch (error) {
-      console.error("로그인 오류:", error);
+      console.error("login error:", error);
       throw error;
     } finally {
       setIsLoading(false);

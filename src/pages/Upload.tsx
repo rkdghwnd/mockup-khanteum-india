@@ -19,7 +19,7 @@ const Upload = () => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState(CATEGORY[0]);
   const [description, setDescription] = useState("");
-  const [copyright, setCopyright] = useState("모든 권리 보유");
+  const [copyright, setCopyright] = useState("All Rights Reserved");
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
@@ -32,7 +32,7 @@ const Upload = () => {
   const handleUpload = async () => {
     // 인증 확인
     if (!user) {
-      setError("로그인이 필요합니다.");
+      setError("Login is required.");
       return;
     }
 
