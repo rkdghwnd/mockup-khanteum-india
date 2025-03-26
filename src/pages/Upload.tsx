@@ -6,10 +6,12 @@ import UploadCopyright from "../components/upload/UploadCopyright";
 import UploadDesc from "../components/upload/UploadDesc";
 import UploadProfile from "../components/upload/UploadProfile";
 import { CATEGORY } from "../utils/DUMMY";
-import { videoApi } from "../utils/cookieApi";
+import { videoService } from "../services/video.service";
+import { useAuth } from "../context/AuthContext";
 
 const Upload = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +30,12 @@ const Upload = () => {
 
   // 비디오 업로드 핸들러
   const handleUpload = async () => {
+    // 인증 확인
+    if (!user) {
+      setError("로그인이 필요합니다.");
+      return;
+    }
+
     // 필수 입력값 검증
     if (!title) {
       setError("Please enter a title.");
@@ -49,21 +57,23 @@ const Upload = () => {
       return;
     }
 
-    // FormData 생성
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("category", category);
-    formData.append("copyright", copyright);
-    formData.append("thumbnail", thumbnailFile);
-    formData.append("video", videoFile);
-
     try {
       setIsLoading(true);
       setError(null);
 
-      // API 호출
-      await videoApi.uploadVideo(formData);
+      // Supabase 서비스 호출
+      const { success, error } = await videoService.uploadVideo({
+        title,
+        description,
+        category,
+        videoFile,
+        thumbnailFile,
+        copyright,
+      });
+
+      if (!success || error) {
+        throw new Error(error || "Video upload failed");
+      }
 
       // 업로드 성공 시 홈으로 이동
       navigate("/");

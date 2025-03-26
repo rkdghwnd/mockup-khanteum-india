@@ -5,47 +5,55 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { User, authApi } from "../utils/cookieApi";
-import { initializeStorage } from "../utils/cookieStorage";
+import { User, authService } from "../services/auth.service";
 
-// 인증 컨텍스트 타입
+/**
+ * 인증 컨텍스트 타입 정의
+ */
 interface AuthContextType {
-  user: Omit<User, "password"> | null;
+  user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   signup: (email: string, password: string, name?: string) => Promise<void>;
 }
 
-// 기본값 생성
+// 기본값으로 초기화된 인증 컨텍스트
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
   login: async () => {},
-  logout: () => {},
+  logout: async () => {},
   signup: async () => {},
 });
 
-// 인증 제공자 컴포넌트
+/**
+ * 인증 컨텍스트 제공자 컴포넌트
+ */
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<Omit<User, "password"> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 초기화 및 인증 상태 확인
+  /**
+   * 초기 로딩 시 인증 상태 확인
+   */
   useEffect(() => {
-    // 쿠키 스토리지 초기화
-    initializeStorage();
-
-    // 인증 상태 확인
     const checkAuthStatus = async () => {
       try {
         setIsLoading(true);
-        const { user } = await authApi.getCurrentUser();
+        const { user, error } = await authService.getCurrentUser();
+
+        if (error) {
+          console.error("인증 상태 확인 오류:", error);
+          setUser(null);
+          return;
+        }
+
         setUser(user);
       } catch (error) {
-        console.error("사용자 인증 확인 오류:", error);
+        console.error("인증 상태 확인 오류:", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -55,33 +63,72 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuthStatus();
   }, []);
 
-  // 로그인 함수
+  /**
+   * 로그인 핸들러
+   */
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const { user } = await authApi.login(email, password);
-      setUser(user);
+      const { success, user, error } = await authService.login(email, password);
+
+      if (!success || error) {
+        throw new Error(error || "로그인 실패");
+      }
+
+      setUser(user || null);
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 로그아웃 함수
-  const logout = () => {
-    authApi.logout();
-    setUser(null);
+  /**
+   * 로그아웃 핸들러
+   */
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      const { success, error } = await authService.logout();
+
+      if (!success || error) {
+        throw new Error(error || "로그아웃 실패");
+      }
+
+      setUser(null);
+    } catch (error) {
+      console.error("로그아웃 오류:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // 회원가입 함수
+  /**
+   * 회원가입 핸들러
+   */
   const signup = async (email: string, password: string, name?: string) => {
     setIsLoading(true);
     try {
-      await authApi.signup(email, password, name);
+      const { success, error } = await authService.signup(
+        email,
+        password,
+        name
+      );
+
+      if (!success || error) {
+        throw new Error(error || "회원가입 실패");
+      }
+    } catch (error) {
+      console.error("회원가입 오류:", error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 컨텍스트 값 제공
   return (
     <AuthContext.Provider
       value={{
@@ -98,5 +145,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// 인증 컨텍스트 사용 훅
+/**
+ * 인증 컨텍스트 사용 Hook
+ */
 export const useAuth = () => useContext(AuthContext);
