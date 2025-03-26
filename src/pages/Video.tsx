@@ -90,7 +90,7 @@ const Video = () => {
               ref={videoRef}
               autoPlay
               playsInline
-              muted
+              // muted
               loop
               src={actualVideoSrc || ""}
               className="w-full h-full object-cover"
