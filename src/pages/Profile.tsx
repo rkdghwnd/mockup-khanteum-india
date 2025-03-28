@@ -9,15 +9,15 @@ import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Video, videoService } from "../services/video.service";
 
 const Profile = () => {
-  // 현재 무슨 탭인지 저장 상태
+  // State to store current tab
   const [currentTab, setCurrentTab] = useState(0);
   const [myVideos, setMyVideos] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 사용자 정보 가져오기
+  // Get user information
   const { user, isAuthenticated } = useAuth();
 
-  // 내 동영상 가져오기
+  // Fetch my videos
   useEffect(() => {
     const fetchMyVideos = async () => {
       try {
@@ -25,7 +25,7 @@ const Profile = () => {
         const { videos } = await videoService.getMyVideos();
         setMyVideos(videos);
       } catch (error) {
-        console.error("내 동영상 로딩 오류:", error);
+        console.error("Error loading my videos:", error);
       } finally {
         setIsLoading(false);
       }
@@ -36,7 +36,7 @@ const Profile = () => {
     }
   }, [isAuthenticated]);
 
-  // 동영상을 카테고리별로 그룹화하는 함수
+  // Function to group videos by category
   const groupVideosByCategory = (videos: Video[]) => {
     const grouped: Record<string, Video[]> = {};
 
@@ -50,42 +50,42 @@ const Profile = () => {
     return grouped;
   };
 
-  // 동영상 삭제 처리 함수
+  // Function to handle video deletion
   const handleDeleteVideo = async (videoId: string) => {
     try {
-      // 비디오 삭제 API 호출
+      // Call video deletion API
       const { success, error } = await videoService.deleteVideo(videoId);
 
       if (!success) {
         throw new Error(error);
       }
 
-      // 로컬 상태 업데이트
+      // Update local state
       setMyVideos((prev) => prev.filter((video) => video.id !== videoId));
     } catch (error) {
-      console.error("동영상 삭제 오류:", error);
-      // 오류 메시지 표시 로직 추가 가능
+      console.error("Error deleting video:", error);
+      // Logic to display error message can be added here
     }
   };
 
-  // 로그인하지 않은 경우 로그인 안내 메시지 표시
+  // Display login prompt if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="min-h-[calc(100vh-105px)] flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl font-bold mb-4">
-          프로필을 보려면 로그인이 필요합니다
+          Login required to view profile
         </h1>
         <Link
           to="/login"
           className="px-6 py-2 bg-[#00d4c8] text-white rounded-full"
         >
-          로그인 하기
+          Login
         </Link>
       </div>
     );
   }
 
-  // 사용자의 동영상을 카테고리별로 그룹화
+  // Group user's videos by category
   const groupedVideos = groupVideosByCategory(myVideos);
 
   return (
@@ -93,11 +93,11 @@ const Profile = () => {
       <ProfileBanner />
       {user && (
         <User
-          name={user.name || "사용자"}
+          name={user.name || "User"}
           email={user.email}
-          followers={0} // 추후 팔로워 기능 구현 시 변경
-          push={0} // 추후 푸시 기능 구현 시 변경
-          views={0} // 추후 조회수 기능 구현 시 변경
+          followers={0} // Will be updated when follower feature is implemented
+          push={0} // Will be updated when push feature is implemented
+          views={0} // Will be updated when view count feature is implemented
           // userId={user.id}
         />
       )}
@@ -110,17 +110,17 @@ const Profile = () => {
       ) : myVideos.length === 0 ? (
         <div className="text-center p-8">
           <p className="text-lg text-gray-500 mb-4">
-            아직 업로드한 동영상이 없습니다.
+            You haven't uploaded any videos yet.
           </p>
           <Link
             to="/upload"
             className="px-6 py-2 bg-[#00d4c8] text-white rounded-full"
           >
-            첫 동영상 업로드 하기
+            Upload your first video
           </Link>
         </div>
       ) : (
-        // 카테고리별로 동영상 표시
+        // Display videos by category
         Object.entries(groupedVideos).map(([category, videos]) => (
           <VideoList
             key={category}
