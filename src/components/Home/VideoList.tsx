@@ -17,8 +17,8 @@ const VideoList = ({
   video,
   className,
   isProfile = false,
-  onDelete,
-}: VideoListProps) => {
+}: // onDelete,
+VideoListProps) => {
   return (
     <section className={cn("w-full px-5 h-auto", className)}>
       <div className="flex justify-between w-full">
@@ -57,14 +57,14 @@ const VideoList = ({
               )}
             >
               {/* 프로필 페이지에서만 삭제 버튼 표시 */}
-              {isProfile && onDelete && (
+              {/* {isProfile && onDelete && (
                 <button
                   onClick={() => onDelete(id || idx.toString())}
                   className="absolute top-1 right-1 z-10 bg-black bg-opacity-50 text-white rounded-full w-6 h-6 flex items-center justify-center"
                 >
                   &times;
                 </button>
-              )}
+              )} */}
               <Link to={`/video?videoSrc=${videoSrc}${id ? `&id=${id}` : ""}`}>
                 <Thumbnail
                   src={thumbnail}
