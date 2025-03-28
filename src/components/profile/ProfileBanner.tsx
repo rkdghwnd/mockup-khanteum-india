@@ -5,14 +5,14 @@ const ProfileBanner = () => {
   return (
     // 나중에 바로 아래 div의 백그라운드에 프로필 배너(서버에서 받아서 넣기)
     <div className="md:h-[400px] h-[145px] relative">
-      <img src="/profile.png" className="h-full w-full"/>
+      <img src="/profile.png" className="h-full w-full" />
       <span className="absolute w-[26px] h-[26px] rounded-full top-3 right-3 cursor-pointer flex items-center justify-center pb-1">
-        <TrashIcon />
+        {/* <TrashIcon /> */}
       </span>
-      <label className="absolute w-[26px] h-[26px] rounded-full bottom-3 right-3 bg-white flex items-center justify-center pb-1 cursor-pointer">
+      {/* <label className="absolute w-[26px] h-[26px] rounded-full bottom-3 right-3 bg-white flex items-center justify-center pb-1 cursor-pointer">
         <input type="file" name="" id="" className="hidden" />
         <CameraIcon />
-      </label>
+      </label> */}
     </div>
   );
 };

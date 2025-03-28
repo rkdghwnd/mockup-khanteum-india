@@ -141,6 +141,40 @@ export const authApi = {
     const users = getObjectCookie<User[]>(COOKIE_NAMES.USER_INFO) || [];
     return users.some((u) => u.id === userId);
   },
+
+  // 비밀번호 변경
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean }> => {
+    const token = getCookie(COOKIE_NAMES.AUTH_TOKEN);
+    if (!token) {
+      throw new Error("로그인이 필요합니다.");
+    }
+
+    const userId = parseToken(token);
+    const users = getObjectCookie<User[]>(COOKIE_NAMES.USER_INFO) || [];
+
+    // 현재 사용자 찾기
+    const userIndex = users.findIndex((u) => u.id === userId);
+
+    if (userIndex === -1) {
+      throw new Error("사용자를 찾을 수 없습니다.");
+    }
+
+    // 현재 비밀번호 확인
+    if (users[userIndex].password !== currentPassword) {
+      throw new Error("현재 비밀번호가 일치하지 않습니다.");
+    }
+
+    // 비밀번호 변경 (실제로는 보안을 위해 암호화해야 함)
+    users[userIndex].password = newPassword;
+
+    // 사용자 정보 업데이트
+    setObjectCookie(COOKIE_NAMES.USER_INFO, users);
+
+    return { success: true };
+  },
 };
 
 // 비디오 API
@@ -251,25 +285,32 @@ export const videoApi = {
   },
 
   // 비디오 삭제
-  deleteVideo: async (id: string): Promise<{ success: boolean }> => {
-    const userId = getCurrentUserId();
-    if (!userId) {
-      throw new Error("Login required.");
+  deleteVideo: async (videoId: string): Promise<{ success: boolean }> => {
+    const token = getCookie(COOKIE_NAMES.AUTH_TOKEN);
+    if (!token) {
+      throw new Error("로그인이 필요합니다.");
     }
 
+    const userId = parseToken(token);
     const videos = getObjectCookie<Video[]>(COOKIE_NAMES.VIDEOS) || [];
-    const video = videos.find((v) => v.id === id);
 
-    if (!video) {
-      throw new Error("Video not found.");
+    // 비디오 찾기
+    const videoIndex = videos.findIndex((v) => v.id === videoId);
+
+    if (videoIndex === -1) {
+      throw new Error("비디오를 찾을 수 없습니다.");
     }
 
-    if (video.userId !== userId) {
-      throw new Error("You can only delete your own videos.");
+    // 비디오 소유자 확인
+    if (videos[videoIndex].userId !== userId) {
+      throw new Error("비디오를 삭제할 권한이 없습니다.");
     }
 
-    const updatedVideos = videos.filter((v) => v.id !== id);
-    setObjectCookie(COOKIE_NAMES.VIDEOS, updatedVideos);
+    // 비디오 삭제
+    videos.splice(videoIndex, 1);
+
+    // 비디오 목록 업데이트
+    setObjectCookie(COOKIE_NAMES.VIDEOS, videos);
 
     return { success: true };
   },

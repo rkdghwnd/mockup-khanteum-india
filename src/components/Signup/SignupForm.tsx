@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 type SignupFormProps = {
   formAction: ({ id, pw }: { id: string; pw: string }) => void;
@@ -10,6 +11,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const idRef = useRef<HTMLInputElement>(null);
   const pwRef = useRef<HTMLInputElement>(null);
@@ -18,6 +20,12 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
 
   // 인증 컨텍스트 사용
   const { signup } = useAuth();
+
+  // 이메일 포맷 검증 함수
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const formHandler = async (e: FormEvent) => {
     e.preventDefault();
@@ -28,20 +36,36 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
       const pw2 = pw2Ref.current.value;
       const name = nameRef.current?.value;
 
-      // 폼 검증
+      // 폼 검증 초기화
+      setError(null);
+      setEmailError(null);
+
+      // 필수 필드 검증
       if (!id || !pw || !pw2) {
-        setError("Please fill in all required fields.");
+        setError("모든 필수 항목을 입력해주세요.");
         return;
       }
 
+      // 이메일 형식 검증
+      if (!validateEmail(id)) {
+        setEmailError("유효한 이메일 주소를 입력해주세요.");
+        return;
+      }
+
+      // 비밀번호 일치 검증
       if (pw !== pw2) {
-        setError("Passwords do not match.");
+        setError("비밀번호가 일치하지 않습니다.");
+        return;
+      }
+
+      // 비밀번호 길이 검증
+      if (pw.length < 6) {
+        setError("비밀번호는 6자 이상이어야 합니다.");
         return;
       }
 
       try {
         setIsLoading(true);
-        setError(null);
 
         // 인증 컨텍스트를 통한 회원가입
         await signup(id, pw, name);
@@ -50,14 +74,28 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
         formAction({ id, pw });
 
         // 회원가입 성공 시 로그인 페이지로 이동
+        toast(
+          "A verification code has been sent to your email. Kindly verify your email before logging in. "
+        );
         navigate("/login");
       } catch (error) {
         console.error("회원가입 오류:", error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : "Registration failed. Please try again.";
-        setError(errorMessage);
+
+        // 이메일 중복 오류 처리
+        if (
+          error instanceof Error &&
+          error.message.includes("already in use")
+        ) {
+          setEmailError(
+            "이미 사용 중인 이메일입니다. 다른 이메일을 사용해주세요."
+          );
+        } else {
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "회원가입에 실패했습니다. 다시 시도해주세요.";
+          setError(errorMessage);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -95,9 +133,16 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
             placeholder="Please enter your email"
             type="email"
             name="email"
-            className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
+            className={`w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none ${
+              emailError ? "border-red-500" : ""
+            }`}
           />
         </div>
+        {emailError && (
+          <div className="w-[calc(100%-40px)] text-red-500 text-sm mt-1">
+            {emailError}
+          </div>
+        )}
 
         <div className="w-[calc(100%-40px)] text-sm mt-4">Password</div>
         <div className="relative w-[calc(100%-40px)] h-[38px] mt-2 border-[0.5px] border-[#b7b7b7] rounded-3xl overflow-hidden">
@@ -125,6 +170,21 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
             maxLength={20}
             className="w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none"
           />
+        </div>
+        <div className="w-[calc(100%-40px)] flex flex-col space-y-2 mt-4">
+          <label className="flex items-center space-x-2">
+            <input type="checkbox" className="w-4 h-4 accent-[#00d4c8]" />
+            <span className="text-sm">
+              I agree to the terms of usage of this app.
+            </span>
+          </label>
+
+          <label className="flex items-center space-x-2">
+            <input type="checkbox" className="w-4 h-4 accent-[#00d4c8]" />
+            <span className="text-sm">
+              I am of legal age (18 years or older).
+            </span>
+          </label>
         </div>
 
         <div className="w-[calc(100%-40px)] flex flex-col space-y-3 mt-8">

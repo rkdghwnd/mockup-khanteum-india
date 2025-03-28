@@ -7,7 +7,7 @@ const DreamerRanking = () => {
   return (
     <section className="w-full px-5">
       <div className="flex justify-between w-full">
-        <h2 className="text-[15px] font-medium text-[#303030]">2024 Everyone's Startup Dreamer Ranking</h2>
+        {/* <h2 className="text-[15px] font-medium text-[#303030]">2024 Everyone's Startup Dreamer Ranking</h2> */}
         <RightArrowIcon />
       </div>
       <Swiper

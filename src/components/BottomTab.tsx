@@ -3,6 +3,7 @@ import ChartIcon from "../icons/ChartIcon";
 import CirclePlusIcon from "../icons/CirclePlusIcon";
 import ProfileIcon from "../icons/ProfileIcon";
 import SearchIcon from "../icons/SearchIcon";
+import { toast } from "react-toastify";
 
 const BottomTab = () => {
   const [params] = useSearchParams();
@@ -11,9 +12,13 @@ const BottomTab = () => {
   const { pathname } = useLocation();
   return (
     <aside className="fixed right-0 bottom-0 left-0 z-50 h-[52px] bg-white flex justify-evenly items-center border-t-[1px] border-solid border-slate-200">
-      <Link to={chart ? `${pathname}?chart=false` : `${pathname}?chart=true`}>
+      <button
+        onClick={() => {
+          toast("Comming Soon !");
+        }}
+      >
         <ChartIcon fill={chart} />
-      </Link>
+      </button>
       <Link to="/upload">
         <CirclePlusIcon fill={pathname === "/upload"} />
       </Link>

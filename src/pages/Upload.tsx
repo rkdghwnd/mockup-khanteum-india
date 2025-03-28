@@ -106,7 +106,7 @@ const Upload = () => {
             onClick={handleUpload}
             disabled={isLoading}
           >
-            {isLoading ? "Processing..." : "Registration"}
+            {isLoading ? "Processing..." : "Submit Video"}
           </button>
         </div>
       </div>

@@ -30,22 +30,22 @@ const Router = () => {
           </PrivateRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/myWallet"
         element={
           <PrivateRoute>
             <MyWallet />
           </PrivateRoute>
         }
-      />
-      <Route
+      /> */}
+      {/* <Route
         path="/walletPassword"
         element={
           <PrivateRoute>
             <WalletPassword />
           </PrivateRoute>
         }
-      />
+      /> */}
       <Route path="/search" element={<Search />} />
       <Route path="/signup" element={<Signup />} />
       <Route
@@ -67,7 +67,7 @@ const Router = () => {
       />
       <Route path="/notice" element={<Notice />} />
       <Route path="/notify" element={<Notify />} />
-      <Route path="/chart" element={<Ranking />} />
+      {/* <Route path="/chart" element={<Ranking />} /> */}
       <Route
         path="/myFavorite"
         element={
@@ -76,14 +76,14 @@ const Router = () => {
           </PrivateRoute>
         }
       />
-      <Route
+      {/* <Route
         path="/vote"
         element={
           <PrivateRoute>
             <Vote />
           </PrivateRoute>
         }
-      />
+      /> */}
     </Routes>
   );
 };

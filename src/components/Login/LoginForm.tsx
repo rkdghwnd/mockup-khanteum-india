@@ -109,7 +109,7 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
             type="button"
             className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r"
           >
-            Join the Membership
+            Sign Up
           </button>
         </Link>
       </div>

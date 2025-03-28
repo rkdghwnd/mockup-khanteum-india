@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import ProgressBar from "../components/video/ProgressBar";
 import VideoIconGroup from "../components/video/VideoIconGroup";
 import VideoProfile from "../components/video/VideoProfile";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Video as VideoType, videoApi } from "../utils/cookieApi";
+import { useAuth } from "../context/AuthContext";
 
 const Video = () => {
   const [searchParams] = useSearchParams();
@@ -18,6 +19,8 @@ const Video = () => {
   const [videoData, setVideoData] = useState<VideoType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { isAuthenticated } = useAuth();
 
   // 비디오 실행 정지 함수
   const videoPlayHandler = () => {
@@ -117,6 +120,22 @@ const Video = () => {
   };
 
   const actualVideoSrc = videoData?.videoSrc || videoSrc;
+
+  // if (!isAuthenticated) {
+  //   return (
+  //     <div className="min-h-[calc(100vh-105px)] flex flex-col items-center justify-center p-4">
+  //       <h1 className="text-2xl font-bold mb-4">
+  //         동영상을 시청하려면 로그인이 필요합니다
+  //       </h1>
+  //       <Link
+  //         to="/login"
+  //         className="px-6 py-2 bg-[#00d4c8] text-white rounded-full"
+  //       >
+  //         로그인 하기
+  //       </Link>
+  //     </div>
+  //   );
+  // }
 
   return (
     <section className="w-full h-[calc(100vh-105px)] relative bg-gradient-to-t from-slate-300 to-white via-blue-50">

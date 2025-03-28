@@ -9,7 +9,7 @@ const Login = () => {
     <section className="bg-[url('bg_pc.png')] h-[calc(100vh-105px)] overflow-hidden flex flex-col items-center justify-center">
       <img src="logo.png" className="w-[56px] h-[56px]" />
       <LoginForm formAction={LoginHandle} />
-      <SocialLogin />
+      {/* <SocialLogin /> */}
     </section>
   );
 };
