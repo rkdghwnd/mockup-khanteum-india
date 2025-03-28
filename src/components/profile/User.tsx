@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FacebookIcon from "../../icons/FacebookIcon";
 import InstaIcon from "../../icons/InstaIcon";
-import PencilIcon from "../../icons/PencilIcon";
+// import PencilIcon from "../../icons/PencilIcon";
 import ProfileIcon from "../../icons/ProfileIcon";
 import SettingIcon from "../../icons/SettingIcon";
 import YoutubeIcon from "../../icons/YoutubeIcon";
@@ -32,17 +32,17 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
 
     // 기본적인 유효성 검사
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("모든 필드를 입력해주세요.");
+      setError("Please fill in all fields.");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("새 비밀번호는 최소 6자 이상이어야 합니다.");
+      setError("New password must be at least 6 characters.");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+      setError("New password and confirmation password do not match.");
       return;
     }
 
@@ -59,7 +59,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
       }
 
       setSuccess(true);
-      toast.success("비밀번호가 성공적으로 변경되었습니다!", {
+      toast.success("Password has been successfully changed!", {
         position: "top-center",
       });
 
@@ -72,7 +72,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
         setError(error.message);
       } else {
         setError(
-          "비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해 주세요."
+          "Failed to change password. Please check your current password."
         );
       }
     } finally {
@@ -84,7 +84,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">비밀번호 변경</h2>
+          <h2 className="text-xl font-semibold">Change Password</h2>
           <button onClick={onClose} className="text-gray-500 text-xl">
             &times;
           </button>
@@ -92,7 +92,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
 
         {success ? (
           <div className="text-green-500 py-4 text-center">
-            비밀번호가 성공적으로 변경되었습니다!
+            Password has been successfully changed!
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -103,7 +103,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
             )}
 
             <div className="mb-4">
-              <label className="block text-sm mb-1">현재 비밀번호</label>
+              <label className="block text-sm mb-1">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
@@ -113,7 +113,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm mb-1">새 비밀번호</label>
+              <label className="block text-sm mb-1">New Password</label>
               <input
                 type="password"
                 value={newPassword}
@@ -121,12 +121,12 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
                 className="w-full px-3 py-2 border rounded-md outline-none"
               />
               <p className="text-xs text-gray-500 mt-1">
-                6자 이상의 비밀번호를 입력해주세요.
+                Please enter a password with at least 6 characters.
               </p>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm mb-1">새 비밀번호 확인</label>
+              <label className="block text-sm mb-1">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmPassword}
@@ -141,14 +141,14 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
                 onClick={onClose}
                 className="px-4 py-2 text-gray-500 mr-2"
               >
-                취소
+                Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading}
                 className="px-4 py-2 bg-[#00d4c8] text-white rounded-md disabled:opacity-50"
               >
-                {isLoading ? "처리 중..." : "비밀번호 변경"}
+                {isLoading ? "Processing..." : "Change Password"}
               </button>
             </div>
           </form>
@@ -167,7 +167,7 @@ const ProfileSettingsModal = ({ onClose }: { onClose: () => void }) => {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
         <div className="bg-white rounded-lg p-6 w-[90%] max-w-md">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">프로필 설정</h2>
+            <h2 className="text-xl font-semibold">Profile Settings</h2>
             <button onClick={onClose} className="text-gray-500 text-xl">
               &times;
             </button>
@@ -178,16 +178,16 @@ const ProfileSettingsModal = ({ onClose }: { onClose: () => void }) => {
               className="w-full text-left px-4 py-3 border rounded-md hover:bg-gray-50"
               onClick={() => setShowPasswordModal(true)}
             >
-              비밀번호 변경
+              Change Password
             </button>
 
-            <button className="w-full text-left px-4 py-3 border rounded-md hover:bg-gray-50">
-              프로필 사진 변경
+            {/* <button className="w-full text-left px-4 py-3 border rounded-md hover:bg-gray-50">
+              Change Profile Picture
             </button>
 
             <button className="w-full text-left px-4 py-3 border rounded-md hover:bg-gray-50 text-red-500">
-              회원 탈퇴
-            </button>
+              Delete Account
+            </button> */}
           </div>
         </div>
       </div>
@@ -219,7 +219,7 @@ const User = ({ name, email, followers, push, views }: UserProps) => {
             <div className="relative">
               <span className="text-[#245aab] text-sm">{email}</span>{" "}
               <button className="absolute top-1/2 -translate-y-1/2 -right-8 w-[16px] h-[16px]">
-                <PencilIcon className="w-full h-full" />
+                {/* <PencilIcon className="w-full h-full" /> */}
               </button>
             </div>
             <div className="w-full flex space-x-4 mt-2">
@@ -232,7 +232,7 @@ const User = ({ name, email, followers, push, views }: UserProps) => {
         <div className="w-full  flex justify-evenly mt-5">
           <div className="flex flex-col items-center justify-center">
             <span className="font-semibold">{followers}</span>
-            <p className="text-center">Follwers</p>
+            <p className="text-center">Followers</p>
           </div>
           <div className="flex flex-col items-center justify-center">
             <span className="font-semibold">{push}</span>
