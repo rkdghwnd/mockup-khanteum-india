@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import ProgressBar from "../components/video/ProgressBar";
 import VideoIconGroup from "../components/video/VideoIconGroup";
 import VideoProfile from "../components/video/VideoProfile";
-import { Link, useSearchParams } from "react-router-dom";
-import { Video as VideoType, videoApi } from "../utils/cookieApi";
+import { useSearchParams } from "react-router-dom";
+import { Video as VideoType } from "../utils/cookieApi";
 import { useAuth } from "../context/AuthContext";
+import { videoService } from "../services/video.service";
 
 const Video = () => {
   const [searchParams] = useSearchParams();
@@ -37,15 +38,21 @@ const Video = () => {
         try {
           setIsLoading(true);
           setError(null);
-          const response = await videoApi.getVideo(videoId);
-          if (response.video) {
-            setVideoData(response.video);
+          const { video, error: videoError } = await videoService.getVideo(
+            videoId
+          );
+
+          if (videoError) {
+            throw new Error(videoError);
+          }
+
+          if (video) {
+            setVideoData(video as VideoType);
 
             // 비디오 데이터가 로드되면 videoRef에 소스 설정
-            if (videoRef.current && response.video.videoSrc) {
-              videoRef.current.src = response.video.videoSrc;
+            if (videoRef.current && video.videoSrc) {
+              videoRef.current.src = video.videoSrc;
               videoRef.current.load();
-
               videoRef.current.play();
             }
           } else {
@@ -53,7 +60,9 @@ const Video = () => {
           }
         } catch (err) {
           console.error("비디오 데이터 가져오기 오류:", err);
-          setError("Failed to load video data.");
+          setError(
+            err instanceof Error ? err.message : "Failed to load video data."
+          );
         } finally {
           setIsLoading(false);
         }
@@ -64,60 +73,6 @@ const Video = () => {
 
     fetchVideoData();
   }, [videoId]);
-
-  // 비디오 페이지 들어올시 자동 실행 및 새로고침시에도 자동 재생
-  useEffect(() => {
-    const playVideo = async () => {
-      try {
-        if (videoRef.current) {
-          const playPromise = videoRef.current.play();
-          if (playPromise !== undefined) {
-            await playPromise;
-            setIsPlay(true);
-          }
-        }
-      } catch (error) {
-        console.error("비디오 자동 재생 실패:", error);
-        setIsPlay(false);
-      }
-    };
-
-    // 비디오 데이터가 로드되었거나 직접 URL이 제공된 경우에만 재생 시도
-    if (!isLoading && (videoData?.videoSrc || videoSrc)) {
-      playVideo();
-    }
-
-    // 페이지 가시성 변경 이벤트 리스너 추가
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && videoRef.current) {
-        videoRef.current
-          .play()
-          .catch((err) => console.error("재생 실패:", err));
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [isLoading, videoData, videoSrc]);
-
-  // 좋아요 클릭 핸들러
-  const handleLike = async () => {
-    if (videoId) {
-      try {
-        await videoApi.likeVideo(videoId);
-        // 좋아요 업데이트 후 비디오 데이터 다시 가져오기
-        const response = await videoApi.getVideo(videoId);
-        if (response.video) {
-          setVideoData(response.video);
-        }
-      } catch (err) {
-        console.error("좋아요 오류:", err);
-      }
-    }
-  };
 
   const actualVideoSrc = videoData?.videoSrc || videoSrc;
 
@@ -138,34 +93,34 @@ const Video = () => {
   // }
 
   return (
-    <section className="w-full h-[calc(100vh-105px)] relative bg-gradient-to-t from-slate-300 to-white via-blue-50">
+    <section className="w-full h-[calc(100vh-105px)] overflow-hidden">
       {isLoading ? (
-        <div className="flex justify-center items-center h-full">
-          <p className="text-gray-500">Loading video...</p>
+        <div className="w-full h-full flex items-center justify-center">
+          <p>Loading...</p>
         </div>
       ) : error ? (
-        <div className="flex justify-center items-center h-full">
+        <div className="w-full h-full flex items-center justify-center">
           <p className="text-red-500">{error}</p>
         </div>
       ) : (
         <>
-          <video
-            className="w-full h-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            webkit-playsinline="true"
-            playsInline={false}
-            disablePictureInPicture={false}
-            controlsList="nodownload"
-            loop={true}
-            ref={videoRef}
-            autoPlay
-          >
-            <source src={actualVideoSrc || ""} type="video/mp4" />
-          </video>
+          {/* 비디오 스크린 */}
+          <div className="w-full h-full absolute top-0 left-0 z-0">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              // muted
+              loop
+              src={actualVideoSrc || ""}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div className="absolute w-full left-0 top-0 h-full z-10">
             <div className="mt-2 " onClick={(e) => e.stopPropagation()}>
               {/* push 들어가는 곳에 서버에서 받는 push값 */}
               <p className="cursor-pointer font-semibold text-[16px] text-center text-white">
-                {videoData ? videoData.views : 345} VIEWS
+                {videoData ? videoData.views : 0} VIEWS
               </p>
             </div>
             <div
@@ -184,10 +139,7 @@ const Video = () => {
                     description={videoData?.description || "설명 없음"}
                   />
                 </div>
-                <VideoIconGroup
-                  likeCount={videoData?.likes || 0}
-                  onLike={handleLike}
-                />
+                <VideoIconGroup viewCount={videoData?.views || 0} />
               </div>
               {/* 비디오 재생바(비디오 ref, 이모티콘 바꿀 실행중 상태, 비디오 실행 함수 넘김) */}
               <ProgressBar

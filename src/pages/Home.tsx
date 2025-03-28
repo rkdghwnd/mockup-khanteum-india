@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import Banner from "../components/Home/Banner";
 import DreamerRanking from "../components/Home/DreamerRanking";
 import VideoList from "../components/Home/VideoList";
-import { VIDEODUMMY, CATEGORY } from "../utils/DUMMY";
-import { Video, videoApi, categoryApi } from "../utils/cookieApi";
+import { CATEGORY } from "../utils/DUMMY";
+import { Video, videoService } from "../services/video.service";
 
 const Home = () => {
   const [videos, setVideos] = useState<{ [category: string]: Video[] }>({});
-  const [categories, setCategories] = useState<string[]>(CATEGORY);
+  const [categories] = useState<string[]>(CATEGORY);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,68 +17,42 @@ const Home = () => {
         setIsLoading(true);
         setError(null);
 
-        // 카테고리 목록 가져오기
-        const categoriesResponse = await categoryApi.getCategories();
-        setCategories(categoriesResponse.categories);
+        // 카테고리는 DUMMY 데이터에서 가져옴
+        // 실제로는 Supabase에서 가져올 수 있도록 서비스를 확장할 수 있음
 
         // 모든 비디오를 가져온 다음 카테고리별로 분류
-        const allVideosResponse = await videoApi.getAllVideos();
+        const { videos: allVideos, error: videoError } =
+          await videoService.getAllVideos();
+
+        if (videoError) {
+          throw new Error(videoError);
+        }
+
         const videosByCategory: { [category: string]: Video[] } = {};
 
         // 카테고리별로 비디오 분류
-        categoriesResponse.categories.forEach((category) => {
-          videosByCategory[category] = allVideosResponse.videos.filter(
+        categories.forEach((category) => {
+          videosByCategory[category] = allVideos.filter(
             (video) => video.category === category
           );
         });
 
-        // 별도로 "All" 카테고리 추가
-        videosByCategory["Official"] = allVideosResponse.videos.slice(0, 6);
+        // 별도로 "Official" 카테고리 추가
+        videosByCategory["Official"] = allVideos.slice(0, 6);
 
         setVideos(videosByCategory);
       } catch (err) {
         console.error("비디오 목록 가져오기 오류:", err);
-        setError("Failed to load video list.");
-
-        // 에러 발생 시 더미 데이터 사용
-        setVideos(transformDummyData());
+        setError(
+          err instanceof Error ? err.message : "Failed to load video list."
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchVideos();
-  }, []);
-
-  // 더미 데이터를 변환하는 헬퍼 함수
-  const transformDummyData = () => {
-    const result: { [category: string]: Video[] } = {};
-
-    Object.entries(VIDEODUMMY).forEach(([category, videos]) => {
-      result[
-        category === "official"
-          ? "Official"
-          : category.charAt(0).toUpperCase() + category.slice(1)
-      ] = videos.map((video, index) => ({
-        id: `dummy-${category}-${index}`,
-        title: `${category.charAt(0).toUpperCase() + category.slice(1)} Video ${
-          index + 1
-        }`,
-        description: `This is a dummy ${category} video ${index + 1}`,
-        category: category,
-        userId: "dummy-user",
-        userName: "Dummy User",
-        videoSrc: video.videoSrc,
-        thumbnail: video.thumbnail,
-        copyright: "All Rights Reserved",
-        views: Math.floor(Math.random() * 1000),
-        likes: Math.floor(Math.random() * 100),
-        createdAt: new Date().toISOString(),
-      }));
-    });
-
-    return result;
-  };
+  }, [categories]);
 
   return (
     <div className="w-full h-full">
