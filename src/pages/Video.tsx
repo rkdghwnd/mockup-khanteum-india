@@ -134,6 +134,7 @@ const Video = () => {
                     userName={videoData?.userName || "사용자"}
                     title={videoData?.title || "제목 없음"}
                     description={videoData?.description || "설명 없음"}
+                    createdAt={videoData?.createdAt || 0}
                   />
                 </div>
                 <VideoIconGroup viewCount={videoData?.views || 0} />

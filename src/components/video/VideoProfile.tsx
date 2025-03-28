@@ -4,9 +4,15 @@ interface VideoProfileProps {
   userName: string;
   title: string;
   description: string;
+  createdAt: string;
 }
 
-const VideoProfile = ({ userName, title, description }: VideoProfileProps) => {
+const VideoProfile = ({
+  userName,
+  title,
+  description,
+  createdAt,
+}: VideoProfileProps) => {
   return (
     <div className="absolute bottom-0 px-5 left-0 w-full h-[82px] text-white">
       <div className="flex items-center space-x-3">
@@ -16,7 +22,11 @@ const VideoProfile = ({ userName, title, description }: VideoProfileProps) => {
         </span>
         <div>
           <p>{userName}</p>
-          <p className="text-sm">2024.07.16</p>
+          <p className="text-sm">
+            {new Date(createdAt).toLocaleString("ko-KR", {
+              timeZone: "Asia/Kolkata",
+            })}
+          </p>
         </div>
       </div>
       <p className="text-sm">{title}</p>
