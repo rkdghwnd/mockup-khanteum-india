@@ -25,7 +25,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         role="status"
         aria-label="loading"
       >
-        <span className="sr-only">로딩 중...</span>
+        <span className="sr-only">Loading...</span>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import LoginForm from "../components/Login/LoginForm";
-import SocialLogin from "../components/Login/SocialLogin";
+// import SocialLogin from "../components/Login/SocialLogin";
 
 const Login = () => {
   const LoginHandle = ({ id, pw }: { id: string; pw: string }) => {

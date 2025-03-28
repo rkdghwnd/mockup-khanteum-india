@@ -1,9 +1,9 @@
 import AnnounceIcon from "../icons/AnnounceIcon";
 import NotiIcon from "../icons/NotiIcon";
-import RankingIcon from "../icons/RankingIcon";
+// import RankingIcon from "../icons/RankingIcon";
 import SideProfileIcon from "../icons/SideProfileIcon";
-import VoteIcon from "../icons/VoteIcon";
-import WalletIcon from "../icons/WalletIcon";
+// import VoteIcon from "../icons/VoteIcon";
+// import WalletIcon from "../icons/WalletIcon";
 import BookmarkIcon from "./BookmarkIcon";
 import SidebarMenu from "./SidebarMenu";
 

@@ -2,7 +2,7 @@ import { Link, useLocation, useSearchParams } from "react-router-dom";
 import ChartIcon from "../icons/ChartIcon";
 import CirclePlusIcon from "../icons/CirclePlusIcon";
 import ProfileIcon from "../icons/ProfileIcon";
-import SearchIcon from "../icons/SearchIcon";
+// import SearchIcon from "../icons/SearchIcon";
 import { toast } from "react-toastify";
 
 const BottomTab = () => {
@@ -25,9 +25,9 @@ const BottomTab = () => {
       <Link to="/" className="w-[22px] h-[22px]">
         <img src="logo.png" />
       </Link>
-      <Link to="/search">
+      {/* <Link to="/search">
         <SearchIcon fill={pathname === "/search"} />
-      </Link>
+      </Link> */}
       <Link to="/profile">
         <ProfileIcon fill={pathname === "/profile"} />
       </Link>

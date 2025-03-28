@@ -6,14 +6,14 @@ import Search from "./pages/Search";
 import Signup from "./pages/Signup";
 import Upload from "./pages/Upload";
 import Video from "./pages/Video";
-import MyWallet from "./components/Wallet/MyWallet";
-import WalletPassword from "./components/Wallet/WalletPassword";
+// import MyWallet from "./components/Wallet/MyWallet";
+// import WalletPassword from "./components/Wallet/WalletPassword";
 import Push from "./pages/Push";
 import Notice from "./components/Notice/Notice";
 import Notify from "./components/Notify/Notify";
-import Ranking from "./pages/Ranking";
+// import Ranking from "./pages/Ranking";
 import Favorite from "./components/Favorite/Favorite";
-import Vote from "./components/Vote/Vote";
+// import Vote from "./components/Vote/Vote";
 import PrivateRoute from "./components/PrivateRoute";
 
 const Router = () => {

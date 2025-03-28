@@ -1,5 +1,5 @@
-import CameraIcon from "../../icons/CameraIcon";
-import TrashIcon from "../../icons/TrashIcon";
+// import CameraIcon from "../../icons/CameraIcon";
+// import TrashIcon from "../../icons/TrashIcon";
 
 const ProfileBanner = () => {
   return (

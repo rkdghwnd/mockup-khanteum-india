@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import RightArrowIcon from "../../icons/RightArrowIcon";
+// import RightArrowIcon from "../../icons/RightArrowIcon";
 import { cn, randomCount } from "../../utils/util";
 import Thumbnail from "./Thumbnail";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -23,7 +23,7 @@ const VideoList = ({
     <section className={cn("w-full px-5 h-auto", className)}>
       <div className="flex justify-between w-full">
         <h2 className="text-[15px] font-medium text-[#303030]">{title}</h2>
-        {!isProfile && <RightArrowIcon />}
+        {/* {!isProfile && <RightArrowIcon />} */}
       </div>
       <Swiper
         slidesPerView={3}

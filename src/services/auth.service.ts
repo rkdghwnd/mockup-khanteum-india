@@ -1,7 +1,7 @@
 import { supabase } from "../utils/supabaseClient";
 
 /**
- * 사용자 정보 타입 정의
+ * User information type definition
  */
 export interface User {
   id: string;
@@ -12,15 +12,54 @@ export interface User {
 }
 
 /**
- * 인증 서비스 객체
- * - 회원가입, 로그인, 로그아웃 및 사용자 정보 관리 기능
+ * Authentication service object
+ * - Signup, login, logout and user information management functions
  */
 export const authService = {
   /**
-   * 회원가입 함수
-   * @param email 사용자 이메일
-   * @param password 사용자 비밀번호
-   * @param name 사용자 이름 (선택사항)
+   * Email duplication check function
+   * @param email Email to check
+   */
+  checkEmailExists: async (
+    email: string
+  ): Promise<{ exists: boolean; error?: string }> => {
+    try {
+      // Check if email format is valid
+      if (!email.includes("@")) {
+        return {
+          exists: false,
+          error: "Please enter a valid email address.",
+        };
+      }
+
+      // Search for email in users table
+      const { data, error } = await supabase
+        .from("users")
+        .select("email")
+        .eq("email", email)
+        .limit(1);
+
+      if (error) throw error;
+
+      // If data exists, email already exists
+      return { exists: data && data.length > 0 };
+    } catch (error: unknown) {
+      console.error("Email duplication check error:", error);
+      return {
+        exists: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while checking email.",
+      };
+    }
+  },
+
+  /**
+   * Signup function
+   * @param email User email
+   * @param password User password
+   * @param name User name (optional)
    */
   signup: async (
     email: string,
@@ -28,13 +67,21 @@ export const authService = {
     name?: string
   ): Promise<{ success: boolean; error?: string }> => {
     try {
-      // 이메일/비밀번호로 회원가입 - 메타데이터 설정
+      // Email format validation
+      if (!email.includes("@")) {
+        return {
+          success: false,
+          error: "Please enter a valid email address.",
+        };
+      }
+
+      // Signup with email/password - set metadata
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            name: name || email.split("@")[0], // 이름이 없으면 이메일에서 추출
+            name: name || email.split("@")[0], // Extract from email if name is not provided
           },
         },
       });
@@ -44,7 +91,7 @@ export const authService = {
         throw error;
       }
 
-      // 성공 시 바로 로그인까지 시도
+      // Try login immediately after successful signup
       await supabase.auth.signInWithPassword({
         email,
         password,
@@ -53,35 +100,6 @@ export const authService = {
       return { success: true };
     } catch (error: unknown) {
       console.error("Signup error:", error);
-
-      // 느슨한 인증 정책: 이메일 형식이 아니어도 허용하기 위한 임시 처리
-      if (error instanceof Error && error.message.includes("valid email")) {
-        try {
-          // 간단한 이메일 형식으로 변환하여 재시도
-          const tempEmail = `${email.replace(/[^a-zA-Z0-9]/g, "")}@temp.com`;
-          const { error: retryError } = await supabase.auth.signUp({
-            email: tempEmail,
-            password,
-            options: {
-              data: {
-                name: name || email,
-                original_input: email, // 원래 입력 저장
-              },
-            },
-          });
-
-          if (!retryError) {
-            // 성공 시 바로 로그인
-            await supabase.auth.signInWithPassword({
-              email: tempEmail,
-              password,
-            });
-            return { success: true };
-          }
-        } catch (retryError) {
-          console.error("Signup retry error:", retryError);
-        }
-      }
 
       return {
         success: false,
@@ -94,53 +112,26 @@ export const authService = {
   },
 
   /**
-   * 로그인 함수
-   * @param email 사용자 이메일
-   * @param password 사용자 비밀번호
+   * Login function
+   * @param email User email
+   * @param password User password
    */
   login: async (
     email: string,
     password: string
   ): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-      // 기본 로그인 시도
+      // Basic login attempt
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        // 느슨한 인증 정책: 이메일 형식이 아닌 경우 처리
-        if (error.message.includes("Invalid login credentials")) {
-          // 변환된 이메일 형식으로 시도
-          const tempEmail = `${email.replace(/[^a-zA-Z0-9]/g, "")}@temp.com`;
-          const { data: retryData, error: retryError } =
-            await supabase.auth.signInWithPassword({
-              email: tempEmail,
-              password,
-            });
-
-          if (!retryError && retryData.user) {
-            const user: User = {
-              id: retryData.user.id,
-              email: retryData.user.email || tempEmail,
-              name:
-                retryData.user.user_metadata.name || tempEmail.split("@")[0],
-              profileImage: retryData.user.user_metadata.profile_image,
-              createdAt: retryData.user.created_at,
-            };
-            return { success: true, user };
-          }
-
-          // 그래도 실패하면 오류 발생
-          throw new Error("Login failed");
-        }
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data.user) throw new Error("User information not found");
 
-      // 사용자 정보 형식 변환
+      // Convert user information format
       const user: User = {
         id: data.user.id,
         email: data.user.email || "",
@@ -154,26 +145,6 @@ export const authService = {
     } catch (error: unknown) {
       console.error("Login error:", error);
 
-      // 느슨한 인증 정책: 모든 인증 실패 시 익명 로그인 시도
-      try {
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-
-        if (!anonError && anonData.user) {
-          // 익명 로그인 성공
-          const user: User = {
-            id: anonData.user.id,
-            email: "guest@example.com",
-            name: "Guest User",
-            profileImage: null,
-            createdAt: anonData.user.created_at,
-          };
-          return { success: true, user };
-        }
-      } catch (anonError) {
-        console.error("Anonymous login error:", anonError);
-      }
-
       return {
         success: false,
         error:
@@ -185,7 +156,7 @@ export const authService = {
   },
 
   /**
-   * 로그아웃 함수
+   * Logout function
    */
   logout: async (): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -194,36 +165,24 @@ export const authService = {
       return { success: true };
     } catch (error: unknown) {
       console.error("Logout error:", error);
-      // 느슨한 인증: 로그아웃 오류가 발생해도 성공으로 처리
-      return { success: true };
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An error occurred during logout.",
+      };
     }
   },
 
   /**
-   * 현재 인증된 사용자 정보 조회
+   * Get current authenticated user information
    */
   getCurrentUser: async (): Promise<{ user: User | null; error?: string }> => {
     try {
       const { data, error } = await supabase.auth.getUser();
 
-      if (error) {
-        // 느슨한 인증: 세션 오류 시 익명 로그인 시도
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-
-        if (!anonError && anonData.user) {
-          const user: User = {
-            id: anonData.user.id,
-            email: "guest@example.com",
-            name: "Guest User",
-            profileImage: null,
-            createdAt: anonData.user.created_at,
-          };
-          return { user };
-        }
-        throw error;
-      }
-
+      if (error) throw error;
       if (!data.user) return { user: null };
 
       const user: User = {
@@ -251,7 +210,7 @@ export const authService = {
   },
 
   /**
-   * 인증 여부 확인 (느슨한 정책으로 항상 인증됨으로 처리 가능)
+   * Authentication check
    */
   isAuthenticated: async (): Promise<boolean> => {
     try {
@@ -259,8 +218,58 @@ export const authService = {
       return !!data.session;
     } catch (error) {
       console.error("Authentication check error:", error);
-      // 느슨한 인증: 오류 발생해도 인증된 것으로 간주
-      return true;
+      return false;
+    }
+  },
+
+  /**
+   * Password change function
+   * @param currentPassword Current password
+   * @param newPassword New password
+   */
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      // Check current user session
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+
+      if (sessionError) throw sessionError;
+      if (!sessionData.session)
+        throw new Error("Login session has expired. Please login again.");
+
+      // Re-authenticate with current password
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: sessionData.session.user.email || "",
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        if (signInError.message.includes("Invalid login credentials")) {
+          throw new Error("Current password is incorrect.");
+        }
+        throw signInError;
+      }
+
+      // Change password
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (updateError) throw updateError;
+
+      return { success: true };
+    } catch (error: unknown) {
+      console.error("Password change error:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "An error occurred while changing password.",
+      };
     }
   },
 };

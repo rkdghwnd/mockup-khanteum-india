@@ -1,22 +1,22 @@
 import { createClient } from "@supabase/supabase-js";
 
-// 환경 변수에서 Supabase URL과 Anon Key 가져오기
+// Get Supabase URL and Anon Key from environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// 환경 변수 확인
+// Check environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Supabase 환경 변수가 설정되지 않았습니다.");
+  throw new Error("Supabase environment variables are not set.");
 }
 
-// Supabase 클라이언트 생성
+// Create Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// 간소화된 데이터베이스 타입 정의
+// Simplified database type definition
 export type Database = {
   public: {
     Tables: {
-      // 사용자 테이블 정의
+      // Users table definition
       users: {
         Row: {
           id: string;
@@ -40,7 +40,7 @@ export type Database = {
           created_at?: string;
         };
       };
-      // 비디오 테이블 정의
+      // Videos table definition
       videos: {
         Row: {
           id: string;
@@ -80,9 +80,9 @@ export type Database = {
         };
       };
     };
-    // 함수 정의
+    // Functions definition
     Functions: {
-      // 조회수 증가 함수
+      // View count increment function
       increment_view_count: {
         Args: {
           video_id: string;

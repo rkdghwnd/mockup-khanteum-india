@@ -15,7 +15,7 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 인증 컨텍스트 사용
+  // Using authentication context
   const { login } = useAuth();
 
   const formHandler = async (e: FormEvent) => {
@@ -24,7 +24,7 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
       const id = idRef.current.value;
       const pw = pwRef.current.value;
 
-      // 폼 검증
+      // Form validation
       if (!id || !pw) {
         setError("Please enter your email and password.");
         return;
@@ -34,16 +34,16 @@ const LoginForm = ({ formAction }: LoginFormProps) => {
         setIsLoading(true);
         setError(null);
 
-        // 인증 컨텍스트를 통한 로그인
+        // Login through authentication context
         await login(id, pw);
 
-        // 이전 코드와의 호환성을 위해 formAction도 호출
+        // Call formAction for compatibility with previous code
         formAction({ id, pw });
 
-        // 로그인 성공 시 홈으로 이동
+        // Navigate to home on successful login
         navigate("/");
       } catch (err) {
-        console.error("로그인 오류:", err);
+        console.error("Login error:", err);
         setError(
           err instanceof Error ? err.message : "Login failed. Please try again."
         );

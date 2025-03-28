@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import ProfileBanner from "../components/profile/ProfileBanner";
 import ProfileTab from "../components/profile/ProfileTab";
 import User from "../components/profile/User";
-import { Video, videoApi } from "../utils/cookieApi";
 import { useAuth } from "../context/AuthContext";
 import VideoList from "../components/Home/VideoList";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { Video, videoService } from "../services/video.service";
 
 const Profile = () => {
   // 현재 무슨 탭인지 저장 상태
@@ -22,7 +22,7 @@ const Profile = () => {
     const fetchMyVideos = async () => {
       try {
         setIsLoading(true);
-        const { videos } = await videoApi.getMyVideos();
+        const { videos } = await videoService.getMyVideos();
         setMyVideos(videos);
       } catch (error) {
         console.error("내 동영상 로딩 오류:", error);
@@ -54,7 +54,11 @@ const Profile = () => {
   const handleDeleteVideo = async (videoId: string) => {
     try {
       // 비디오 삭제 API 호출
-      await videoApi.deleteVideo(videoId);
+      const { success, error } = await videoService.deleteVideo(videoId);
+
+      if (!success) {
+        throw new Error(error);
+      }
 
       // 로컬 상태 업데이트
       setMyVideos((prev) => prev.filter((video) => video.id !== videoId));
@@ -94,7 +98,7 @@ const Profile = () => {
           followers={0} // 추후 팔로워 기능 구현 시 변경
           push={0} // 추후 푸시 기능 구현 시 변경
           views={0} // 추후 조회수 기능 구현 시 변경
-          userId={user.id}
+          // userId={user.id}
         />
       )}
       <ProfileTab currentTab={currentTab} setTab={setCurrentTab} />

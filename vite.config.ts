@@ -18,14 +18,14 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000, // 포트번호 3000으로 변경
+    port: 3000, // Change port number to 3000
   },
 });
 
-// 동적으로 AWS SDK 불러오기
+// Dynamically load AWS SDK
 // let s3Client: any = null;
 
-// S3 클라이언트 초기화 (필요할 때만)
+// Initialize S3 client (only when needed)
 // const getS3Client = async () => {
 //   if (process.env.NODE_ENV === "production" && !s3Client) {
 //     try {
@@ -36,7 +36,7 @@ export default defineConfig({
 //         region: "ap-northeast-2",
 //       });
 //     } catch (err) {
-//       console.error("AWS SDK 로딩 실패", err);
+//       console.error("Failed to load AWS SDK", err);
 //     }
 //   }
 //   return s3Client;

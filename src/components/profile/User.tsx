@@ -6,7 +6,8 @@ import ProfileIcon from "../../icons/ProfileIcon";
 import SettingIcon from "../../icons/SettingIcon";
 import YoutubeIcon from "../../icons/YoutubeIcon";
 import { FOLLOWERS } from "../../utils/DUMMY";
-import { authApi } from "../../utils/cookieApi";
+import { authService } from "../../services/auth.service";
+import { toast } from "react-toastify";
 
 type UserProps = {
   name: string;
@@ -14,7 +15,6 @@ type UserProps = {
   followers: number;
   push: number;
   views: number;
-  userId: string;
 };
 
 // 비밀번호 변경 모달 컴포넌트
@@ -37,7 +37,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
     }
 
     if (newPassword.length < 6) {
-      setError("새 비밀번호는 6자 이상이어야 합니다.");
+      setError("새 비밀번호는 최소 6자 이상이어야 합니다.");
       return;
     }
 
@@ -49,8 +49,19 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
     try {
       setIsLoading(true);
       // 비밀번호 변경 API 호출
-      await authApi.changePassword(currentPassword, newPassword);
+      const { success, error: changeError } = await authService.changePassword(
+        currentPassword,
+        newPassword
+      );
+
+      if (!success) {
+        throw new Error(changeError);
+      }
+
       setSuccess(true);
+      toast.success("비밀번호가 성공적으로 변경되었습니다!", {
+        position: "top-center",
+      });
 
       // 3초 후 모달 닫기
       setTimeout(() => {
@@ -60,7 +71,9 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
       if (error instanceof Error) {
         setError(error.message);
       } else {
-        setError("비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해주세요.");
+        setError(
+          "비밀번호 변경에 실패했습니다. 현재 비밀번호를 확인해 주세요."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -108,7 +121,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
                 className="w-full px-3 py-2 border rounded-md outline-none"
               />
               <p className="text-xs text-gray-500 mt-1">
-                6자 이상의 비밀번호를 입력하세요.
+                6자 이상의 비밀번호를 입력해주세요.
               </p>
             </div>
 
@@ -135,7 +148,7 @@ const PasswordChangeModal = ({ onClose }: { onClose: () => void }) => {
                 disabled={isLoading}
                 className="px-4 py-2 bg-[#00d4c8] text-white rounded-md disabled:opacity-50"
               >
-                {isLoading ? "처리 중..." : "변경하기"}
+                {isLoading ? "처리 중..." : "비밀번호 변경"}
               </button>
             </div>
           </form>
@@ -173,7 +186,7 @@ const ProfileSettingsModal = ({ onClose }: { onClose: () => void }) => {
             </button>
 
             <button className="w-full text-left px-4 py-3 border rounded-md hover:bg-gray-50 text-red-500">
-              계정 삭제
+              회원 탈퇴
             </button>
           </div>
         </div>
@@ -186,7 +199,7 @@ const ProfileSettingsModal = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-const User = ({ name, email, followers, push, views, userId }: UserProps) => {
+const User = ({ name, email, followers, push, views }: UserProps) => {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   return (
@@ -199,15 +212,15 @@ const User = ({ name, email, followers, push, views, userId }: UserProps) => {
           <div className="h-full">
             <div className="flex items-center justify-between">
               <span className="font-medium text-lg">{name} </span>{" "}
-              {/* <button className="" onClick={() => setShowSettingsModal(true)}>
+              <button className="" onClick={() => setShowSettingsModal(true)}>
                 <SettingIcon />
-              </button> */}
+              </button>
             </div>
             <div className="relative">
               <span className="text-[#245aab] text-sm">{email}</span>{" "}
-              {/* <button className="absolute top-1/2 -translate-y-1/2 -right-8 w-[16px] h-[16px]">
+              <button className="absolute top-1/2 -translate-y-1/2 -right-8 w-[16px] h-[16px]">
                 <PencilIcon className="w-full h-full" />
-              </button> */}
+              </button>
             </div>
             <div className="w-full flex space-x-4 mt-2">
               <FacebookIcon />

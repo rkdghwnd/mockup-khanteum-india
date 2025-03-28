@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (error instanceof Error) {
         throw error; // 원래 에러 객체를 그대로 전달
       } else {
-        throw new Error("회원가입에 실패했습니다. 다시 시도해주세요.");
+        throw new Error("Registration failed. Please try again.");
       }
     } finally {
       setIsLoading(false);

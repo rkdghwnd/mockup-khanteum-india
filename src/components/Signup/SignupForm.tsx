@@ -2,6 +2,7 @@ import { FormEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { authService } from "../../services/auth.service";
 
 type SignupFormProps = {
   formAction: ({ id, pw }: { id: string; pw: string }) => void;
@@ -12,19 +13,56 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   const idRef = useRef<HTMLInputElement>(null);
   const pwRef = useRef<HTMLInputElement>(null);
   const pw2Ref = useRef<HTMLInputElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // 인증 컨텍스트 사용
+  // Authentication context
   const { signup } = useAuth();
 
-  // 이메일 포맷 검증 함수
+  // Email format validation function
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  // Email duplication check function
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    if (!email || !validateEmail(email)) return false;
+
+    setIsCheckingEmail(true);
+    try {
+      const { exists, error } = await authService.checkEmailExists(email);
+      if (error) {
+        console.error("Email verification error:", error);
+        return false;
+      }
+
+      if (exists) {
+        setEmailError(
+          "This email is already in use. Please use a different email."
+        );
+        return true;
+      }
+
+      setEmailError(null);
+      return false;
+    } catch (error) {
+      console.error("Email verification error:", error);
+      return false;
+    } finally {
+      setIsCheckingEmail(false);
+    }
+  };
+
+  // Check for duplicate email when focus leaves the email input
+  const handleEmailBlur = async () => {
+    if (idRef.current?.value) {
+      await checkEmailExists(idRef.current.value);
+    }
   };
 
   const formHandler = async (e: FormEvent) => {
@@ -36,64 +74,78 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
       const pw2 = pw2Ref.current.value;
       const name = nameRef.current?.value;
 
-      // 폼 검증 초기화
+      // Form validation initialization
       setError(null);
       setEmailError(null);
 
-      // 필수 필드 검증
+      // Required fields validation
       if (!id || !pw || !pw2) {
-        setError("모든 필수 항목을 입력해주세요.");
+        setError("Please fill in all required fields.");
         return;
       }
 
-      // 이메일 형식 검증
+      // Email format validation
       if (!validateEmail(id)) {
-        setEmailError("유효한 이메일 주소를 입력해주세요.");
+        setEmailError("Please enter a valid email address.");
         return;
       }
 
-      // 비밀번호 일치 검증
+      // Email duplication check
+      const emailExists = await checkEmailExists(id);
+      if (emailExists) {
+        return;
+      }
+
+      // Password match validation
       if (pw !== pw2) {
-        setError("비밀번호가 일치하지 않습니다.");
+        setError("Passwords do not match.");
         return;
       }
 
-      // 비밀번호 길이 검증
+      // Password length validation
       if (pw.length < 6) {
-        setError("비밀번호는 6자 이상이어야 합니다.");
+        setError("Password must be at least 6 characters long.");
         return;
       }
 
       try {
         setIsLoading(true);
 
-        // 인증 컨텍스트를 통한 회원가입
+        // Sign up through authentication context
         await signup(id, pw, name);
 
-        // 이전 코드와의 호환성을 위해 formAction도 호출
+        // Call formAction for compatibility with previous code
         formAction({ id, pw });
 
-        // 회원가입 성공 시 로그인 페이지로 이동
-        toast(
-          "A verification code has been sent to your email. Kindly verify your email before logging in. "
+        // Display success toast message
+        toast.success(
+          "A verification code has been sent to your email. Kindly verify your email before logging in.",
+          {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
         );
         navigate("/login");
       } catch (error) {
-        console.error("회원가입 오류:", error);
+        console.error("Sign up error:", error);
 
-        // 이메일 중복 오류 처리
+        // Email duplication error handling
         if (
           error instanceof Error &&
           error.message.includes("already in use")
         ) {
           setEmailError(
-            "이미 사용 중인 이메일입니다. 다른 이메일을 사용해주세요."
+            "This email is already in use. Please use a different email."
           );
         } else {
           const errorMessage =
             error instanceof Error
               ? error.message
-              : "회원가입에 실패했습니다. 다시 시도해주세요.";
+              : "Sign up failed. Please try again.";
           setError(errorMessage);
         }
       } finally {
@@ -133,11 +185,17 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
             placeholder="Please enter your email"
             type="email"
             name="email"
+            onBlur={handleEmailBlur}
             className={`w-full h-full shadow-[inset_1px_2px_4px_1px_rgba(0,0,0,0.13)] pl-12 pr-2 outline-none ${
               emailError ? "border-red-500" : ""
             }`}
           />
         </div>
+        {isCheckingEmail && (
+          <div className="w-[calc(100%-40px)] text-gray-500 text-sm mt-1">
+            Checking email...
+          </div>
+        )}
         {emailError && (
           <div className="w-[calc(100%-40px)] text-red-500 text-sm mt-1">
             {emailError}
@@ -199,7 +257,7 @@ const SignupForm = ({ formAction }: SignupFormProps) => {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isCheckingEmail || !!emailError}
             className="rounded-3xl w-full text-[#00d4c8] bg-white shadow-xl h-[35px] hover:from-white hover:to-[#c0c5df] to-100% hover:bg-gradient-to-r disabled:opacity-50"
           >
             {isLoading ? "Signing up..." : "Sign Up"}

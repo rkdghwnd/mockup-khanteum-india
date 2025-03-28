@@ -35,12 +35,13 @@ const Sidebar = ({ open }: SidebarProps) => {
         {isAuthenticated ? (
           <button
             className="block font-bold w-11/12 text-left"
+            style={{ width: "auto" }}
             onClick={() => {
               logout();
-              toast("로그아웃 되었습니다.");
+              toast("You have been logged out.");
             }}
           >
-            Logout {">"}
+            Logout
           </button>
         ) : (
           <Link to="login" className="block font-bold w-11/12">
@@ -77,7 +78,7 @@ const Sidebar = ({ open }: SidebarProps) => {
             </p>
             <p>CEO: Youngkyun Kim</p>
             <p>Business license number: 252-87-01071</p>
-            <p>Mail-order Business: 제2022-서울구로-1015호</p>
+            <p>Mail-order Business: 2022-Seoul Guro-1015</p>
             <p>
               Telephone: 070-4120-3619 (Available hours: 10:00~13:00,
               14:00~18:00)

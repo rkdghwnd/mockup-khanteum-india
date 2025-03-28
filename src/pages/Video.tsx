@@ -3,9 +3,8 @@ import ProgressBar from "../components/video/ProgressBar";
 import VideoIconGroup from "../components/video/VideoIconGroup";
 import VideoProfile from "../components/video/VideoProfile";
 import { useSearchParams } from "react-router-dom";
-import { Video as VideoType } from "../utils/cookieApi";
-import { useAuth } from "../context/AuthContext";
-import { videoService } from "../services/video.service";
+
+import { type Video, videoService } from "../services/video.service";
 
 const Video = () => {
   const [searchParams] = useSearchParams();
@@ -17,11 +16,9 @@ const Video = () => {
   // 비디오 플레이 정지에 따른 정지 이모티콘 변화할 상태
   const [isPlay, setIsPlay] = useState(true);
   // 비디오 상세 정보
-  const [videoData, setVideoData] = useState<VideoType | null>(null);
+  const [videoData, setVideoData] = useState<Video | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const { isAuthenticated } = useAuth();
 
   // 비디오 실행 정지 함수
   const videoPlayHandler = () => {
@@ -47,7 +44,7 @@ const Video = () => {
           }
 
           if (video) {
-            setVideoData(video as VideoType);
+            setVideoData(video);
 
             // 비디오 데이터가 로드되면 videoRef에 소스 설정
             if (videoRef.current && video.videoSrc) {

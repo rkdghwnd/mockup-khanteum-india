@@ -7,11 +7,10 @@ import UploadDesc from "../components/upload/UploadDesc";
 import UploadProfile from "../components/upload/UploadProfile";
 import { CATEGORY } from "../utils/DUMMY";
 import { videoService } from "../services/video.service";
-import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Upload = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,12 +29,6 @@ const Upload = () => {
 
   // 비디오 업로드 핸들러
   const handleUpload = async () => {
-    // 인증 확인
-    if (!user) {
-      setError("Login is required.");
-      return;
-    }
-
     // 필수 입력값 검증
     if (!title) {
       setError("Please enter a title.");
@@ -61,19 +54,24 @@ const Upload = () => {
       setIsLoading(true);
       setError(null);
 
-      // Supabase 서비스 호출
-      const { success, error } = await videoService.uploadVideo({
+      // API 호출 - videoService.uploadVideo는 FormData가 아닌 객체를 기대함
+      const { success, error: uploadError } = await videoService.uploadVideo({
         title,
         description,
         category,
-        videoFile,
-        thumbnailFile,
         copyright,
+        thumbnailFile,
+        videoFile,
       });
 
-      if (!success || error) {
-        throw new Error(error || "Video upload failed");
+      if (!success) {
+        throw new Error(uploadError);
       }
+
+      // 업로드 성공 메시지
+      toast.success("Video uploaded successfully!", {
+        position: "top-center",
+      });
 
       // 업로드 성공 시 홈으로 이동
       navigate("/");
@@ -82,7 +80,7 @@ const Upload = () => {
       setError(
         err instanceof Error
           ? err.message
-          : "Video upload failed. Please try again."
+          : "Failed to upload video. Please try again."
       );
     } finally {
       setIsLoading(false);
@@ -116,7 +114,7 @@ const Upload = () => {
             onClick={handleUpload}
             disabled={isLoading}
           >
-            {isLoading ? "Processing..." : "Submit Video"}
+            {isLoading ? "Loading..." : "Submit Video"}
           </button>
         </div>
       </div>

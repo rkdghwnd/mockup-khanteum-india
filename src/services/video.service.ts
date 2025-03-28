@@ -153,7 +153,6 @@ export const videoService = {
         createdAt: videoData.created_at,
         likesCount: videoData.likes_count || 0,
         commentsCount: videoData.comments_count || 0,
-        userHasLiked: false,
       };
 
       return { video };
@@ -240,20 +239,11 @@ export const videoService = {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
-      if (userError) {
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("Login required");
-        if (anonData && anonData.user) {
-          const updatedUserData = { ...userData, user: anonData.user };
-          Object.assign(userData, updatedUserData);
-        } else {
-          throw new Error("Anonymous login failed");
-        }
+      if (userError || !userData.user) {
+        throw new Error("로그인이 필요합니다");
       }
 
-      if (!userData.user) throw new Error("Login required");
-
+      // 썸네일 업로드
       const thumbnailFileName = `${uuidv4()}-${uploadData.thumbnailFile.name}`;
       const { error: thumbnailError } = await supabase.storage
         .from("thumbnails")
@@ -265,6 +255,7 @@ export const videoService = {
         .from("thumbnails")
         .getPublicUrl(thumbnailFileName);
 
+      // 비디오 업로드
       const videoFileName = `${uuidv4()}-${uploadData.videoFile.name}`;
       const { error: videoError } = await supabase.storage
         .from("videos")
@@ -276,6 +267,7 @@ export const videoService = {
         .from("videos")
         .getPublicUrl(videoFileName);
 
+      // 데이터베이스에 비디오 정보 저장
       const { data: insertData, error: insertError } = await supabase
         .from("videos")
         .insert({
@@ -315,7 +307,7 @@ export const videoService = {
         error:
           error instanceof Error
             ? error.message
-            : "An error occurred while uploading the video.",
+            : "비디오 업로드 중 오류가 발생했습니다.",
       };
     }
   },
@@ -331,19 +323,9 @@ export const videoService = {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
-      if (userError) {
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("Login required");
-        if (anonData && anonData.user) {
-          const updatedUserData = { ...userData, user: anonData.user };
-          Object.assign(userData, updatedUserData);
-        } else {
-          throw new Error("Anonymous login failed");
-        }
+      if (userError || !userData.user) {
+        throw new Error("로그인이 필요합니다");
       }
-
-      if (!userData.user) throw new Error("Login required");
 
       const { data, error } = await supabase.rpc("toggle_like", {
         video_id: videoId,
@@ -359,7 +341,7 @@ export const videoService = {
         error:
           error instanceof Error
             ? error.message
-            : "An error occurred while processing the like.",
+            : "좋아요 처리 중 오류가 발생했습니다.",
       };
     }
   },
@@ -414,25 +396,15 @@ export const videoService = {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
 
-      if (userError) {
-        const { data: anonData, error: anonError } =
-          await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error("Login required");
-        if (anonData && anonData.user) {
-          const updatedUserData = { ...userData, user: anonData.user };
-          Object.assign(userData, updatedUserData);
-        } else {
-          throw new Error("Anonymous login failed");
-        }
+      if (userError || !userData.user) {
+        throw new Error("로그인이 필요합니다");
       }
 
-      if (!userData.user) throw new Error("Login required");
-
-      const { data, error } = await supabase
+      const { data: commentData, error: commentError } = await supabase
         .from("comments")
         .insert({
-          video_id: videoId,
           user_id: userData.user.id,
+          video_id: videoId,
           content,
         })
         .select(
@@ -443,15 +415,15 @@ export const videoService = {
         )
         .single();
 
-      if (error) throw error;
+      if (commentError) throw commentError;
 
       const comment: Comment = {
-        id: data.id,
-        content: data.content,
-        userId: data.user_id,
-        userName: data.users?.name,
-        userProfileImage: data.users?.profile_image,
-        createdAt: data.created_at,
+        id: commentData.id,
+        content: commentData.content,
+        userId: commentData.user_id,
+        userName: commentData.users?.name,
+        userProfileImage: commentData.users?.profile_image,
+        createdAt: commentData.created_at,
       };
 
       return { success: true, comment };
@@ -462,7 +434,74 @@ export const videoService = {
         error:
           error instanceof Error
             ? error.message
-            : "An error occurred while adding the comment.",
+            : "댓글 작성 중 오류가 발생했습니다.",
+      };
+    }
+  },
+
+  /**
+   * 내 비디오 삭제하기
+   * @param videoId 삭제할 비디오 ID
+   */
+  deleteVideo: async (
+    videoId: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError || !userData.user) {
+        throw new Error("로그인이 필요합니다");
+      }
+
+      // 비디오 정보 가져오기
+      const { data: videoData, error: videoError } = await supabase
+        .from("videos")
+        .select("*")
+        .eq("id", videoId)
+        .single();
+
+      if (videoError) throw videoError;
+
+      // 비디오 소유자 확인
+      if (videoData.user_id !== userData.user.id) {
+        throw new Error("자신이 업로드한 비디오만 삭제할 수 있습니다");
+      }
+
+      // 비디오 파일명 추출
+      const videoFileName = videoData.video_url.split("/").pop();
+      const thumbnailFileName = videoData.thumbnail_url.split("/").pop();
+
+      // 비디오 레코드 삭제
+      const { error: deleteError } = await supabase
+        .from("videos")
+        .delete()
+        .eq("id", videoId);
+
+      if (deleteError) throw deleteError;
+
+      // 스토리지 파일 삭제 시도 (실패해도 계속 진행)
+      try {
+        await supabase.storage.from("videos").remove([videoFileName]);
+      } catch (storageError) {
+        console.error("비디오 파일 삭제 오류:", storageError);
+      }
+
+      try {
+        await supabase.storage.from("thumbnails").remove([thumbnailFileName]);
+      } catch (storageError) {
+        console.error("썸네일 파일 삭제 오류:", storageError);
+      }
+
+      return { success: true };
+    } catch (error: unknown) {
+      console.error("Error deleting video:", error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "비디오 삭제 중 오류가 발생했습니다.",
       };
     }
   },
