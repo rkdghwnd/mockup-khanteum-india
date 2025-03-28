@@ -4,7 +4,7 @@ interface VideoProfileProps {
   userName: string;
   title: string;
   description: string;
-  createdAt: string;
+  createdAt: string | number;
 }
 
 const VideoProfile = ({
